@@ -27,6 +27,9 @@ const devices = rango(deviceCount).map((_, i) => {
     return {
         id: iio.device_get_id(dev),
         name: iio.device_get_name(dev),
+        attributes: rango(iio.device_get_attrs_count(dev)).map((_, j) =>
+            iio.device_get_attr(dev, j)
+        ),
         channels: rango(channelCount).map((_, j) => {
             const cha = iio.device_get_channel(dev, j);
             return {
@@ -34,13 +37,16 @@ const devices = rango(deviceCount).map((_, i) => {
                 name: iio.channel_get_name(cha),
                 type: iio.channel_get_type(cha),
                 isOutput: iio.channel_is_output(cha) || undefined,
-                isEnabled: iio.channel_is_enabled(cha) || undefined
+                isEnabled: iio.channel_is_enabled(cha) || undefined,
+                attributes: rango(iio.channel_get_attrs_count(cha)).map((_, k) =>
+                    iio.channel_get_attr(cha, k)
+                )
             };
         })
     };
 });
 
-console.log(JSON.stringify(devices, null, 4));
+console.log(JSON.stringify({devices: devices}, null, 4));
 
 // const main = () => {
 //     const rx  = iio.context_get_device(cxt, 2); // cf-ad9361-lpc

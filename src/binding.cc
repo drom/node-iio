@@ -45,7 +45,7 @@ NAN_METHOD(get_backends_count) {
 //      If the index is invalid, NULL is returned
 NAN_METHOD(get_backend) {
     ASSERT_UINT(info[0], index)
-    CALL_LIBIIO_CONST_CHAR(iio_get_backend(index))
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_get_backend(index))
 }
 
 // Create a scan context.
@@ -130,7 +130,7 @@ NAN_METHOD(context_get_device) {
 NAN_METHOD(device_get_id) {
     ASSERT_OBJECT(info[0], jsdev)
     iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
-    CALL_LIBIIO_CONST_CHAR(iio_device_get_id(dev))
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_device_get_id(dev))
 }
 
 // Retrieve the device name (e.g. xadc)
@@ -142,7 +142,38 @@ NAN_METHOD(device_get_id) {
 NAN_METHOD(device_get_name) {
     ASSERT_OBJECT(info[0], jsdev)
     iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
-    CALL_LIBIIO_CONST_CHAR(iio_device_get_name(dev))
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_device_get_name(dev))
+}
+
+/*
+    Enumerate the device-specific attributes of the given device.
+
+    Parameters
+        dev:  A pointer to an iio_device structure
+    Returns
+        The number of device-specific attributes found
+*/
+NAN_METHOD(device_get_attrs_count) {
+    ASSERT_OBJECT(info[0], jsdev)
+    iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
+    CALL_LIBIIO_UINT(iio_device_get_attrs_count(dev))
+}
+
+/*
+    Get the device-specific attribute present at the given index.
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+        index:  The index corresponding to the attribute
+    Returns
+        On success, a pointer to a static NULL-terminated string
+        If the index is invalid, NULL is returned
+*/
+NAN_METHOD(device_get_attr) {
+    ASSERT_OBJECT(info[0], jsdev)
+    iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
+    ASSERT_UINT(info[1], index)
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_device_get_attr(dev, index))
 }
 
 // Enumerate the channels of the given device.
@@ -198,7 +229,7 @@ NAN_METHOD(channel_is_output) {
 NAN_METHOD(channel_get_id) {
     ASSERT_OBJECT(info[0], jscha)
     iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
-    CALL_LIBIIO_CONST_CHAR(iio_channel_get_id(cha))
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_channel_get_id(cha))
 }
 
 /*
@@ -271,6 +302,37 @@ NAN_METHOD(channel_enable) {
   iio_channel_enable(cha);
 }
 
+/*
+    Enumerate the channel-specific attributes of the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        The number of channel-specific attributes found
+*/
+NAN_METHOD(channel_get_attrs_count) {
+    ASSERT_OBJECT(info[0], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    CALL_LIBIIO_UINT(iio_channel_get_attrs_count(cha))
+}
+
+/*
+    Get the channel-specific attribute present at the given index.
+
+    Parameters
+        chn:    A pointer to an iio_channel structure
+        index:  The index corresponding to the attribute
+    Returns
+        On success, a pointer to a static NULL-terminated string
+        If the index is invalid, NULL is returned
+*/
+NAN_METHOD(channel_get_attr) {
+    ASSERT_OBJECT(info[0], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    ASSERT_UINT(info[1], index)
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_channel_get_attr(cha, index))
+}
+
 // iio_context_destroy
 // iio_context_find_device
 
@@ -295,6 +357,8 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(context_get_device)
     EXPORT_FUNCTION(device_get_id)
     EXPORT_FUNCTION(device_get_name)
+    EXPORT_FUNCTION(device_get_attrs_count)
+    EXPORT_FUNCTION(device_get_attr)
     EXPORT_FUNCTION(device_get_channels_count)
     EXPORT_FUNCTION(device_get_channel)
     EXPORT_FUNCTION(channel_is_output)
@@ -304,6 +368,8 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(channel_get_type)
     EXPORT_FUNCTION(channel_disable)
     EXPORT_FUNCTION(channel_enable)
+    EXPORT_FUNCTION(channel_get_attrs_count)
+    EXPORT_FUNCTION(channel_get_attr)
 }
 
 NODE_MODULE(libiio, Init)
