@@ -1,2 +1,3 @@
 # node-iio
-libiio bindings for Node.js
+
+[libiio](http://analogdevicesinc.github.io/libiio/) bindings for Node.js
