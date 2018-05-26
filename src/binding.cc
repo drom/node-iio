@@ -165,7 +165,7 @@ NAN_METHOD(device_get_channels_count) {
 //      If the index is invalid, NULL is returned
 NAN_METHOD(device_get_channel) {
     ASSERT_OBJECT(info[0], jsdev)
-    iio_device *dev = (struct iio_device *)iioContext::Resolve(jsdev);
+    iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
     ASSERT_UINT(info[1], index)
     iio_channel *cha;
     cha = iio_device_get_channel(dev, index);
@@ -173,21 +173,117 @@ NAN_METHOD(device_get_channel) {
     info.GetReturnValue().Set(jscha);
 }
 
+/*
+    Return True if the given channel is an output channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        True if the channel is an output channel, False otherwise
+*/
+NAN_METHOD(channel_is_output) {
+  ASSERT_OBJECT(info[0], jscha)
+  iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+  CALL_LIBIIO_BOOL(iio_channel_is_output(cha))
+}
+
+/*
+    Retrieve the channel ID (e.g. voltage0)
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        A pointer to a static NULL-terminated string
+*/
+NAN_METHOD(channel_get_id) {
+    ASSERT_OBJECT(info[0], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    CALL_LIBIIO_CONST_CHAR(iio_channel_get_id(cha))
+}
+
+/*
+    Retrieve the channel name (e.g. vccint)
+
+    Parameters
+        chn:    A pointer to an iio_channel structure
+    Returns
+        A pointer to a static NULL-terminated string
+        NOTE: if the channel has no name, NULL is returned.
+*/
+NAN_METHOD(channel_get_name) {
+    ASSERT_OBJECT(info[0], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_channel_get_name(cha))
+}
+
+/*
+    Returns True if the channel is enabled.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        True if the channel is enabled, False otherwise
+*/
+NAN_METHOD(channel_is_enabled) {
+  ASSERT_OBJECT(info[0], jscha)
+  iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+  CALL_LIBIIO_BOOL(iio_channel_is_enabled(cha))
+}
+
+/*
+    Get the type of the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        The type of the channel
+*/
+NAN_METHOD(channel_get_type) {
+  ASSERT_OBJECT(info[0], jscha)
+  iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+  CALL_LIBIIO_INT(iio_channel_get_type(cha))
+}
+
+/*
+    Disable the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+*/
+NAN_METHOD(channel_disable) {
+  ASSERT_OBJECT(info[0], jscha)
+  iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+  iio_channel_disable(cha);
+}
+
+/*
+    Enable the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+
+    NOTE:Before creating an iio_buffer structure with iio_device_create_buffer,
+    it is required to enable at least one channel of the device to read from.
+*/
+NAN_METHOD(channel_enable) {
+  ASSERT_OBJECT(info[0], jscha)
+  iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+  iio_channel_enable(cha);
+}
+
 // iio_context_destroy
 // iio_context_find_device
-// iio_channel_disable
-// iio_channel_enable
-// iio_channel_is_enabled
-// iio_device_create_buffer
+
 // iio_channel_get_data_format
+// iio_channel_convert_inverse
+
+// iio_device_find_channel
+// iio_device_create_buffer
+
 // iio_buffer_first
 // iio_buffer_start
 // iio_buffer_end
 // iio_buffer_step
-// iio_channel_convert_inverse
-// iio_device_find_channel
-
-
 
 NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(get_backends_count)
@@ -201,6 +297,13 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(device_get_name)
     EXPORT_FUNCTION(device_get_channels_count)
     EXPORT_FUNCTION(device_get_channel)
+    EXPORT_FUNCTION(channel_is_output)
+    EXPORT_FUNCTION(channel_get_id)
+    EXPORT_FUNCTION(channel_get_name)
+    EXPORT_FUNCTION(channel_is_enabled)
+    EXPORT_FUNCTION(channel_get_type)
+    EXPORT_FUNCTION(channel_disable)
+    EXPORT_FUNCTION(channel_enable)
 }
 
 NODE_MODULE(libiio, Init)
@@ -210,9 +313,11 @@ NODE_MODULE(libiio, Init)
 #undef LOCAL_FUNCTION
 #undef EXPORT_NUMBER
 #undef EXPORT_FUNCTION
+#undef CALL_LIBIIO_BOOL
 #undef CALL_LIBIIO_INT
 #undef CALL_LIBIIO_UINT
 #undef CALL_LIBIIO_CONST_CHAR
+#undef CALL_LIBIIO_CONST_CHAR_OR_NULL
 #undef ASSERT_UINT
 #undef ASSERT_BUFFER
 #undef ASSERT_OBJECT

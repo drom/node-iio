@@ -15,8 +15,19 @@
     uint32_t ret = fn; \
     info.GetReturnValue().Set(Nan::New(ret));
 
+#define CALL_LIBIIO_BOOL(fn) \
+    bool ret = fn; \
+    info.GetReturnValue().Set(Nan::New(ret));
+
 #define CALL_LIBIIO_CONST_CHAR(fn) \
     const char *ret = fn; \
+    info.GetReturnValue().Set(Nan::New(ret).ToLocalChecked());
+
+#define CALL_LIBIIO_CONST_CHAR_OR_NULL(fn) \
+    const char *ret = fn; \
+    if (ret == NULL) { \
+        return; \
+    } \
     info.GetReturnValue().Set(Nan::New(ret).ToLocalChecked());
 
 #define ASSERT_UINT(name, var) \
