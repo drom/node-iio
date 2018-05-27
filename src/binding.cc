@@ -176,6 +176,53 @@ NAN_METHOD(device_get_attr) {
     CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_device_get_attr(dev, index))
 }
 
+/*
+    Read the content of the given device-specific attribute.
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+        attr:   A NULL-terminated string corresponding to the name of the attribute
+        dst:    A pointer to the memory area where the NULL-terminated string
+                corresponding to the value read will be stored
+        len:    The available length of the memory area, in bytes
+
+    Returns
+        On success, the number of bytes written to the buffer
+        On error, a negative errno code is returned
+
+    NOTE: By passing NULL as the "attr" argument to iio_device_attr_read,
+    it is now possible to read all of the attributes of a device.
+
+    The buffer is filled with one block of data per attribute of the device,
+    by the order they appear in the iio_device structure.
+
+    The first four bytes of one block correspond to a 32-bit signed value in
+    network order. If negative, it corresponds to the errno code that were
+    returned when reading the attribute; if positive, it corresponds to the
+    length of the data read. In that case, the rest of the block contains the data.
+*/
+NAN_METHOD(device_attr_read) {
+    ASSERT_OBJECT(info[0], jsdev)
+    iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
+    ASSERT_BUFFER(info[1], attr)
+    ASSERT_BUFFER(info[2], dst)
+    ASSERT_UINT(info[3], len)
+    CALL_LIBIIO_INT(iio_device_attr_read(dev, CDATA(attr), CDATA(dst), len))
+}
+
+// iio_device_attr_read() +
+// iio_device_attr_read_all()
+// iio_device_attr_read_bool() +
+// iio_device_attr_read_longlong() +
+// iio_device_attr_read_double()
+
+// iio_device_attr_write()
+// iio_device_attr_write_all()
+// iio_device_attr_write_bool() +
+// iio_device_attr_write_longlong()
+// iio_device_attr_write_double()
+// iio_device_attr_write_raw() +
+
 // Enumerate the channels of the given device.
 // Parameters
 //      dev: A pointer to an iio_device structure
@@ -333,6 +380,54 @@ NAN_METHOD(channel_get_attr) {
     CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_channel_get_attr(cha, index))
 }
 
+/*
+    Read the content of the given channel-specific attribute.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+        attr: A NULL-terminated string corresponding to the name of the attribute
+        dst:  A pointer to the memory area where the NULL-terminated string
+              corresponding to the value read will be stored
+        len:  The available length of the memory area, in bytes
+    Returns
+        On success, the number of bytes written to the buffer
+        On error, a negative errno code is returned
+
+    NOTE:By passing NULL as the "attr" argument to iio_channel_attr_read, it is
+    now possible to read all of the attributes of a channel.
+
+    The buffer is filled with one block of data per attribute of the channel,
+    by the order they appear in the iio_channel structure.
+
+    The first four bytes of one block correspond to a 32-bit signed value in
+    network order. If negative, it corresponds to the errno code that were
+    returned when reading the attribute; if positive, it corresponds to the
+    length of the data read. In that case, the rest of the block contains the data.
+*/
+NAN_METHOD(channel_attr_read) {
+    ASSERT_OBJECT(info[0], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    ASSERT_BUFFER(info[1], attr)
+    ASSERT_BUFFER(info[2], dst)
+    ASSERT_UINT(info[3], len)
+    CALL_LIBIIO_INT(iio_channel_attr_read(cha, CDATA(attr), CDATA(dst), len))
+}
+
+// iio_channel_attr_read_all()
+// iio_channel_attr_read_bool()
+// iio_channel_attr_read_longlong() +
+// iio_channel_attr_read_double()
+
+// iio_channel_attr_write()
+// iio_channel_attr_write_all()
+// iio_channel_attr_write_bool()
+// iio_channel_attr_write_longlong() +
+// iio_channel_attr_write_double()
+// iio_channel_attr_write_raw() +
+
+
+
+
 // iio_context_destroy
 // iio_context_find_device
 
@@ -347,6 +442,9 @@ NAN_METHOD(channel_get_attr) {
 // iio_buffer_end
 // iio_buffer_step
 
+// iio_device_reg_read()
+// iio_device_reg_write()
+
 NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(get_backends_count)
     EXPORT_FUNCTION(get_backend)
@@ -359,6 +457,7 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(device_get_name)
     EXPORT_FUNCTION(device_get_attrs_count)
     EXPORT_FUNCTION(device_get_attr)
+    EXPORT_FUNCTION(device_attr_read)
     EXPORT_FUNCTION(device_get_channels_count)
     EXPORT_FUNCTION(device_get_channel)
     EXPORT_FUNCTION(channel_is_output)
@@ -370,6 +469,7 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(channel_enable)
     EXPORT_FUNCTION(channel_get_attrs_count)
     EXPORT_FUNCTION(channel_get_attr)
+    EXPORT_FUNCTION(channel_attr_read)
 }
 
 NODE_MODULE(libiio, Init)

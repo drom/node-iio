@@ -22,9 +22,25 @@ const devices = rango(deviceCount).map((_, i) => {
     return {
         id: iio.device_get_id(dev),
         name: iio.device_get_name(dev),
-        attributes: rango(iio.device_get_attrs_count(dev)).map((_, j) =>
-            iio.device_get_attr(dev, j)
-        ),
+        attributes: rango(iio.device_get_attrs_count(dev)).map((_, j) => {
+            const key = iio.device_get_attr(dev, j);
+            const dst = Buffer.alloc(1024);
+            const len = iio.device_attr_read(
+                dev,
+                Buffer.from(key + '\u0000'),
+                dst,
+                1024
+            );
+            const value = ((len |0) > 0)
+                ? dst.slice(0, len).toString()
+                : undefined;
+
+            return {
+                key: key,
+                len: len |0,
+                value: value
+            };
+        }),
         channels: rango(channelCount).map((_, j) => {
             const cha = iio.device_get_channel(dev, j);
             return {
@@ -33,9 +49,24 @@ const devices = rango(deviceCount).map((_, i) => {
                 type: iio.channel_get_type(cha),
                 isOutput: iio.channel_is_output(cha) || undefined,
                 isEnabled: iio.channel_is_enabled(cha) || undefined,
-                attributes: rango(iio.channel_get_attrs_count(cha)).map((_, k) =>
-                    iio.channel_get_attr(cha, k)
-                )
+                attributes: rango(iio.channel_get_attrs_count(cha)).map((_, k) => {
+                    const key = iio.channel_get_attr(cha, k);
+                    const dst = Buffer.alloc(1024);
+                    const len = iio.channel_attr_read(
+                        cha,
+                        Buffer.from(key + '\u0000'),
+                        dst,
+                        1024
+                    );
+                    const value = ((len |0)> 0)
+                        ? dst.slice(0, len).toString()
+                        : undefined;
+                    return {
+                        key: key,
+                        len: len |0,
+                        value: value
+                    };
+                })
             };
         })
     };
