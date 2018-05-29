@@ -4,7 +4,7 @@ Linux Industrial Input/Output (IIO) Subsystem library ([libiio](http://analogdev
 
 ### Dependencies
 
-This module depends on [libiio](http://analogdevicesinc.github.io/libiio/) being installed on your system.
+This module depends on [libiio](https://github.com/analogdevicesinc/libiio) being installed on your system.
 
 ### Install
 
