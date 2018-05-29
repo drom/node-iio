@@ -12,6 +12,10 @@ This module depends on [libiio](http://analogdevicesinc.github.io/libiio/) being
 
 ```js
 const iio = require('libiio');
+
+for(let i = 0; i < iio.get_backends_count(); i++) {
+    console.log(iio.get_backend(i));
+}
 ```
 
 ### API
