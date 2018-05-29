@@ -5,7 +5,7 @@
   "main": "example.js",
   "gypfile": true,
   "scripts": {
-    "test": "node examples/info.js",
+    "test": "node examples/backends.js",
     "install": "node-gyp rebuild"
   },
   "author": "Aliaksei Chapyzhenka",
