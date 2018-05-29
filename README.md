@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/drom/node-iio.svg?branch=master)](https://travis-ci.org/drom/node-iio)
 
-Linux Industrial Input/Output ([IIO](https://wiki.analog.com/software/linux/docs/iio/iio)) Subsystem library ([libiio](http://analogdevicesinc.github.io/libiio/)) bindings for Node.js
+Linux Industrial Input/Output ([IIO](https://wiki.analog.com/software/linux/docs/iio/iio)) Subsystem library ([libiio](https://wiki.analog.com/resources/tools-software/linux-software/libiio)) bindings for Node.js
 
 ### Dependencies
 
-This module depends on [libiio](https://github.com/analogdevicesinc/libiio) being installed on your system.
+This module depends on [libiio package](https://github.com/analogdevicesinc/libiio) being installed on your system.
 
 ### Install
 
