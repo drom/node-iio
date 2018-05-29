@@ -3,4 +3,5 @@ node_js:
 - 'lts/*'
 before_install:
 - sudo apt-get -qq update
-- sudo apt-get install -y libiio
+- wget http://swdownloads.analog.com/cse/travis_builds/master_latest_libiio-trusty.deb
+- sudo dpkg -i master_latest_libiio-trusty.deb
