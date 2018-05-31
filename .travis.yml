@@ -1,6 +1,9 @@
 language: node_js
 node_js:
-- 'lts/*'
+- '10'
+- '8'
+- '6'
+- '4'
 before_install:
 - sudo apt-get -qq update
 - wget http://swdownloads.analog.com/cse/travis_builds/master_latest_libiio-trusty.deb
