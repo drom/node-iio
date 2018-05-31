@@ -24,6 +24,38 @@ for(let i = 0; i < iio.get_backends_count(); i++) {
 
 Most of API calls are directly mapped to [libiio API](http://analogdevicesinc.github.io/libiio/) without `iio_` prefix.
 
+| name                       | description                                                    |
+|----------------------------|----------------------------------------------------------------|
+| get_backends_count         | Get the number of available backends                           |
+| get_backend                | Retrieve the name of a given backend                           |
+| create_scan_context        | Create a scan context                                          |
+| scan_context_get_info_list | Enumerate available contexts                                   |
+|                            |                                                                |
+| create_context_from_uri    | Create a context from a URI description                        |
+| context_get_devices_count  | Enumerate the devices found in the given context               |
+| context_get_device         | Get the device present at the given index                      |
+|                            |                                                                |
+| device_get_id              | Retrieve the device ID (e.g. iio:device0)                      |
+| device_get_name            | Retrieve the device name (e.g. xadc)                           |
+| device_get_attrs_count     | Enumerate the device-specific attributes of the given device   |
+| device_get_attr            | Get the device-specific attribute present at the given index   |
+| device_attr_read           | Read the content of the given device-specific attribute        |
+| device_get_channels_count  | Enumerate the channels of the given device                     |
+| device_get_channel         | Get the channel present at the given index                     |
+|                            |                                                                |
+| channel_is_output          | Return True if the given channel is an output channel          |
+| channel_get_id             | Retrieve the channel ID (e.g. voltage0)                        |
+| channel_get_name           | Retrieve the channel name (e.g. vccint)                        |
+| channel_is_enabled         | Returns True if the channel is enabled                         |
+| channel_get_type           | Get the type of the given channel                              |
+| channel_disable            | Disable the given channel                                      |
+| channel_enable             | Enable the given channel                                       |
+| channel_get_attrs_count    | Enumerate the channel-specific attributes of the given channel |
+| channel_get_attr           | Get the channel-specific attribute present at the given index  |
+| channel_attr_read          | Read the content of the given channel-specific attribute       |
+
+
+
 ### License
 
 [MIT](LICENSE)
