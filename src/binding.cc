@@ -30,6 +30,27 @@ public:
 
 using namespace v8;
 
+/*
+    Get the version of the libiio library.
+
+    Parameters
+        major:  A pointer to an unsigned integer (NULL accepted)
+        minor:  A pointer to an unsigned integer (NULL accepted)
+        git_tag:A pointer to a 8-characters buffer (NULL accepted)
+*/
+NAN_METHOD(library_get_version) {
+    ASSERT_BUFFER(info[0], jsver)
+    char *ver = CDATA(jsver);
+    // unsigned int *major;
+    // unsigned int *minor;
+    // char git_tag[8];
+    iio_library_get_version(
+        (unsigned int*)ver,
+        (unsigned int*)(ver + 4),
+        ver + 8
+    );
+}
+
 // Get the number of available backends.
 // Returns:
 //      The number of available backends
@@ -122,6 +143,11 @@ NAN_METHOD(context_get_device) {
     info.GetReturnValue().Set(jsdev);
 }
 
+// TODO
+// iio_context_destroy
+// iio_context_find_device
+
+
 // Retrieve the device ID (e.g. iio:device0)
 // Parameters
 //      dev: A pointer to an iio_device structure
@@ -210,7 +236,7 @@ NAN_METHOD(device_attr_read) {
     CALL_LIBIIO_INT(iio_device_attr_read(dev, CDATA(attr), CDATA(dst), len))
 }
 
-// iio_device_attr_read() +
+// TODO
 // iio_device_attr_read_all()
 // iio_device_attr_read_bool() +
 // iio_device_attr_read_longlong() +
@@ -222,6 +248,10 @@ NAN_METHOD(device_attr_read) {
 // iio_device_attr_write_longlong()
 // iio_device_attr_write_double()
 // iio_device_attr_write_raw() +
+
+// iio_device_reg_read() +
+// iio_device_reg_write() +
+
 
 // Enumerate the channels of the given device.
 // Parameters
@@ -250,6 +280,11 @@ NAN_METHOD(device_get_channel) {
     Local<Object> jscha = iioChannel::New(cha);
     info.GetReturnValue().Set(jscha);
 }
+
+// TODO
+// iio_device_find_channel() +
+// iio_device_get_sample_size() +
+// iio_device_create_buffer() +
 
 /*
     Return True if the given channel is an output channel.
@@ -413,39 +448,83 @@ NAN_METHOD(channel_attr_read) {
     CALL_LIBIIO_INT(iio_channel_attr_read(cha, CDATA(attr), CDATA(dst), len))
 }
 
+// TODO
 // iio_channel_attr_read_all()
 // iio_channel_attr_read_bool()
 // iio_channel_attr_read_longlong() +
 // iio_channel_attr_read_double()
 
+/*
+    Set the value of the given channel-specific attribute.
+
+    Parameters
+        chn:    A pointer to an iio_channel structure
+        attr:   A NULL-terminated string corresponding to the name of the attribute
+        src:    A pointer to the data to be written
+        len:    The number of bytes that should be written
+    Returns
+        On success, the number of bytes written
+        On error, a negative errno code is returned
+*/
+NAN_METHOD(channel_attr_write_raw) {
+    ASSERT_OBJECT(info[0], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    ASSERT_BUFFER(info[1], attr)
+    ASSERT_BUFFER(info[2], src)
+    ASSERT_UINT(info[3], len)
+    CALL_LIBIIO_INT(iio_channel_attr_write_raw(cha, CDATA(attr), CDATA(src), len))
+}
+
+/*
+    Set the value of the given channel-specific attribute.
+
+    Parameters
+        chn:    A pointer to an iio_channel structure
+        attr:   A NULL-terminated string corresponding to the name of the attribute
+        src:    A NULL-terminated string to set the attribute to
+    Returns
+        On success, the number of bytes written
+        On error, a negative errno code is returned
+
+    NOTE: By passing NULL as the "attr" argument to iio_channel_attr_write,
+    it is now possible to write all of the attributes of a channel.
+
+    The buffer must contain one block of data per attribute of the channel,
+    by the order they appear in the iio_channel structure.
+
+    The first four bytes of one block correspond to a 32-bit signed value in
+    network order. If negative, the attribute is not written; if positive,
+    it corresponds to the length of the data to write. In that case,
+    the rest of the block must contain the data.
+*/
+NAN_METHOD(channel_attr_write) {
+    ASSERT_OBJECT(info[0], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    ASSERT_BUFFER(info[1], attr)
+    ASSERT_BUFFER(info[2], src)
+    CALL_LIBIIO_INT(iio_channel_attr_write(cha, CDATA(attr), CDATA(src)))
+}
 // iio_channel_attr_write()
 // iio_channel_attr_write_all()
 // iio_channel_attr_write_bool()
 // iio_channel_attr_write_longlong() +
 // iio_channel_attr_write_double()
-// iio_channel_attr_write_raw() +
-
-
-
-
-// iio_context_destroy
-// iio_context_find_device
 
 // iio_channel_get_data_format
 // iio_channel_convert_inverse
-
-// iio_device_find_channel
-// iio_device_create_buffer
 
 // iio_buffer_first
 // iio_buffer_start
 // iio_buffer_end
 // iio_buffer_step
+// iio_buffer_destroy
 
-// iio_device_reg_read()
-// iio_device_reg_write()
+// iio_buffer_foreach_sample() +
+
+
 
 NAN_MODULE_INIT(Init) {
+    EXPORT_FUNCTION(library_get_version)
     EXPORT_FUNCTION(get_backends_count)
     EXPORT_FUNCTION(get_backend)
     EXPORT_FUNCTION(create_scan_context)
@@ -470,6 +549,8 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(channel_get_attrs_count)
     EXPORT_FUNCTION(channel_get_attr)
     EXPORT_FUNCTION(channel_attr_read)
+    EXPORT_FUNCTION(channel_attr_write_raw)
+    EXPORT_FUNCTION(channel_attr_write)
 }
 
 NODE_MODULE(libiio, Init)
