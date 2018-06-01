@@ -182,8 +182,28 @@ NAN_METHOD(context_get_device) {
 
 // TODO
 // iio_context_destroy
-// iio_context_find_device
 
+/*
+    Try to find a device structure by its name of ID.
+
+    Parameters
+        ctx:    A pointer to an iio_context structure
+        name:   A NULL-terminated string corresponding to the name or the ID
+                of the device to search for
+    Returns
+        On success, a pointer to an iio_device structure
+        If the name or ID does not correspond to any known device, NULL is returned
+*/
+// iio_context_find_device
+NAN_METHOD(context_find_device) {
+    ASSERT_OBJECT(info[0], jsctx)
+    iio_context *cxt = (struct iio_context *)iioContext::Resolve(jsctx);
+    CDATA_OR_NULL(info[1], name)
+    iio_device *dev;
+    dev = iio_context_find_device(cxt, name);
+    Local<Object> jsdev = iioDevice::New(dev);
+    info.GetReturnValue().Set(jsdev);
+}
 
 // Retrieve the device ID (e.g. iio:device0)
 // Parameters
@@ -572,6 +592,7 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(create_context_from_uri)
     EXPORT_FUNCTION(context_get_devices_count)
     EXPORT_FUNCTION(context_get_device)
+    EXPORT_FUNCTION(context_find_device)
     EXPORT_FUNCTION(device_get_id)
     EXPORT_FUNCTION(device_get_name)
     EXPORT_FUNCTION(device_get_attrs_count)
