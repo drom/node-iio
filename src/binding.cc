@@ -3,6 +3,11 @@
 #include "jshandle.h"
 #include "macros.h"
 
+struct cinfo {
+    unsigned int count;
+    iio_context_info **arr;
+};
+
 class iioContext : public JSHandle<iioContext> {
 public:
     static const char *jsClassName() { return "iioContext"; }
@@ -39,11 +44,7 @@ using namespace v8;
         git_tag:A pointer to a 8-characters buffer (NULL accepted)
 */
 NAN_METHOD(library_get_version) {
-    ASSERT_BUFFER(info[0], jsver)
-    char *ver = CDATA(jsver);
-    // unsigned int *major;
-    // unsigned int *minor;
-    // char git_tag[8];
+    CDATA_OR_NULL(info[0], ver)
     iio_library_get_version(
         (unsigned int*)ver,
         (unsigned int*)(ver + 4),
@@ -69,37 +70,73 @@ NAN_METHOD(get_backend) {
     CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_get_backend(index))
 }
 
-// Create a scan context.
-// Parameters:
-//      backend: A NULL-terminated string containing the backend to use for scanning. If NULL, all the available backends are used.
-//      flags: Unused for now. Set to 0.
-// Returns:
-//      on success, a pointer to a iio_scan_context structure
-//      On failure, NULL is returned and errno is set appropriately
+/*
+    Create a scan context.
+        Parameters:
+            backend:    A NULL-terminated string containing the backend to use
+                        for scanning. If NULL, all the available backends are used.
+            flags:      Unused for now. Set to 0.
+        Returns:
+            on success, a pointer to a iio_scan_context structure
+            On failure, NULL is returned and errno is set appropriately
+*/
 NAN_METHOD(create_scan_context) {
-    ASSERT_BUFFER(info[0], uri)
+    CDATA_OR_NULL(info[0], uri)
     ASSERT_UINT(info[1], flags)
     iio_scan_context *cxt;
-    cxt = iio_create_scan_context(CDATA(uri), flags);
+    cxt = iio_create_scan_context(uri, flags);
     Local<Object> jscxt = iioScanContext::New(cxt);
     info.GetReturnValue().Set(jscxt);
 }
 
-// Enumerate available contexts.
-// Parameters:
-//      ctx: A pointer to an iio_scan_context structure
-//      info: A pointer to a 'const struct iio_context_info **' typed variable. The pointed variable will be initialized on success.
-// Returns:
-//      On success, the number of contexts found.
-//      On failure, a negative error number.
+/*
+    Enumerate available contexts.
+        Parameters:
+            ctx:    A pointer to an iio_scan_context structure
+            info:   A pointer to a 'const struct iio_context_info **' typed variable.
+                    The pointed variable will be initialized on success.
+        Returns:
+            On success, the number of contexts found.
+            On failure, a negative error number.
+*/
 
 NAN_METHOD(scan_context_get_info_list) {
     ASSERT_OBJECT(info[0], jsctx)
     iio_scan_context *cxt = (struct iio_scan_context *)iioScanContext::Resolve(jsctx);
-    ASSERT_OBJECT(info[1], jsinfoo)
-    iio_context_info ***infoo = (struct iio_context_info ***)iioContextInfo::Resolve(jsinfoo);
-    CALL_LIBIIO_UINT(iio_scan_context_get_info_list(cxt, infoo))
+    cinfo *myInfo = new cinfo{0, nullptr};
+    myInfo->count = iio_scan_context_get_info_list(cxt, &(myInfo->arr));
+    Local<Object> jscxt = iioContextInfo::New(myInfo);
+    info.GetReturnValue().Set(jscxt);
 }
+
+NAN_METHOD(context_info_count) {
+    ASSERT_OBJECT(info[0], jsinfoo)
+    cinfo *myInfo = (struct cinfo*)iioContextInfo::Resolve(jsinfoo);
+    CALL_LIBIIO_UINT(myInfo->count)
+}
+
+NAN_METHOD(context_info_get_uri_index) {
+    ASSERT_OBJECT(info[0], jsinfoo)
+    cinfo *myInfo = (struct cinfo*)iioContextInfo::Resolve(jsinfoo);
+    ASSERT_UINT(info[1], index)
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_context_info_get_uri(myInfo->arr[index]))
+}
+
+/*
+    Get a description of a discovered context.
+
+    Parameters
+        info:   A pointer to an iio_context_info structure
+    Returns
+        A pointer to a static NULL-terminated string
+*/
+NAN_METHOD(context_info_get_description_index) {
+    ASSERT_OBJECT(info[0], jsinfoo)
+    cinfo *myInfo = (struct cinfo*)iioContextInfo::Resolve(jsinfoo);
+    ASSERT_UINT(info[1], index)
+    CALL_LIBIIO_CONST_CHAR_OR_NULL(iio_context_info_get_description(myInfo->arr[index]))
+}
+
 
 // Create a context from a URI description.
 // Parameters:
@@ -108,9 +145,9 @@ NAN_METHOD(scan_context_get_info_list) {
 //      On success, a pointer to a iio_context structure
 //      On failure, NULL is returned and errno is set appropriately
 NAN_METHOD(create_context_from_uri) {
-    ASSERT_BUFFER(info[0], uri)
+    CDATA_OR_NULL(info[0], uri)
     iio_context *cxt;
-    cxt = iio_create_context_from_uri(CDATA(uri));
+    cxt = iio_create_context_from_uri(uri);
     Local<Object> jscxt = iioContext::New(cxt);
     info.GetReturnValue().Set(jscxt);
 }
@@ -230,10 +267,10 @@ NAN_METHOD(device_get_attr) {
 NAN_METHOD(device_attr_read) {
     ASSERT_OBJECT(info[0], jsdev)
     iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
-    ASSERT_BUFFER(info[1], attr)
-    ASSERT_BUFFER(info[2], dst)
+    CDATA_OR_NULL(info[1], attr)
+    CDATA_OR_NULL(info[2], dst)
     ASSERT_UINT(info[3], len)
-    CALL_LIBIIO_INT(iio_device_attr_read(dev, CDATA(attr), CDATA(dst), len))
+    CALL_LIBIIO_INT(iio_device_attr_read(dev, attr, dst, len))
 }
 
 // TODO
@@ -442,10 +479,10 @@ NAN_METHOD(channel_get_attr) {
 NAN_METHOD(channel_attr_read) {
     ASSERT_OBJECT(info[0], jscha)
     iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
-    ASSERT_BUFFER(info[1], attr)
-    ASSERT_BUFFER(info[2], dst)
+    CDATA_OR_NULL(info[1], attr)
+    CDATA_OR_NULL(info[2], dst)
     ASSERT_UINT(info[3], len)
-    CALL_LIBIIO_INT(iio_channel_attr_read(cha, CDATA(attr), CDATA(dst), len))
+    CALL_LIBIIO_INT(iio_channel_attr_read(cha, attr, dst, len))
 }
 
 // TODO
@@ -469,10 +506,10 @@ NAN_METHOD(channel_attr_read) {
 NAN_METHOD(channel_attr_write_raw) {
     ASSERT_OBJECT(info[0], jscha)
     iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
-    ASSERT_BUFFER(info[1], attr)
-    ASSERT_BUFFER(info[2], src)
+    CDATA_OR_NULL(info[1], attr)
+    CDATA_OR_NULL(info[2], src)
     ASSERT_UINT(info[3], len)
-    CALL_LIBIIO_INT(iio_channel_attr_write_raw(cha, CDATA(attr), CDATA(src), len))
+    CALL_LIBIIO_INT(iio_channel_attr_write_raw(cha, attr, src, len))
 }
 
 /*
@@ -500,9 +537,9 @@ NAN_METHOD(channel_attr_write_raw) {
 NAN_METHOD(channel_attr_write) {
     ASSERT_OBJECT(info[0], jscha)
     iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
-    ASSERT_BUFFER(info[1], attr)
-    ASSERT_BUFFER(info[2], src)
-    CALL_LIBIIO_INT(iio_channel_attr_write(cha, CDATA(attr), CDATA(src)))
+    CDATA_OR_NULL(info[1], attr)
+    CDATA_OR_NULL(info[2], src)
+    CALL_LIBIIO_INT(iio_channel_attr_write(cha, attr, src))
 }
 // iio_channel_attr_write()
 // iio_channel_attr_write_all()
@@ -529,6 +566,9 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(get_backend)
     EXPORT_FUNCTION(create_scan_context)
     EXPORT_FUNCTION(scan_context_get_info_list)
+    EXPORT_FUNCTION(context_info_get_description_index) // context_info_get_description + index
+    EXPORT_FUNCTION(context_info_get_uri_index)  // context_info_get_uri + index
+    EXPORT_FUNCTION(context_info_count)
     EXPORT_FUNCTION(create_context_from_uri)
     EXPORT_FUNCTION(context_get_devices_count)
     EXPORT_FUNCTION(context_get_device)

@@ -30,6 +30,13 @@
     } \
     info.GetReturnValue().Set(Nan::New(ret).ToLocalChecked());
 
+#define CDATA_OR_NULL(name, var) \
+    char *var = NULL; \
+    if (name->IsObject()) { \
+        Local<Object> buf = name->ToObject(); \
+        var = CDATA(buf); \
+    }
+
 #define ASSERT_UINT(name, var) \
     if (!name->IsNumber()) { \
         Nan::ThrowError(#var " must be a number"); \
