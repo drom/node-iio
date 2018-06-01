@@ -338,8 +338,31 @@ NAN_METHOD(device_get_channel) {
     info.GetReturnValue().Set(jscha);
 }
 
+/*
+    Try to find a channel structure by its name of ID.
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+        name:   A NULL-terminated string corresponding to the name or the ID
+                of the channel to search for
+        output: True if the searched channel is output, False otherwise
+    Returns
+        On success, a pointer to an iio_channel structure
+        If the name or ID does not correspond to any known channel of the
+        given device, NULL is returned
+*/
+NAN_METHOD(device_find_channel) {
+    ASSERT_OBJECT(info[0], jsdev)
+    iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
+    CDATA_OR_NULL(info[1], name)
+    ASSERT_BOOL(info[2], output)
+    iio_channel *cha;
+    cha = iio_device_find_channel(dev, name, output);
+    Local<Object> jscha = iioChannel::New(cha);
+    info.GetReturnValue().Set(jscha);
+}
+
 // TODO
-// iio_device_find_channel() +
 // iio_device_get_sample_size() +
 // iio_device_create_buffer() +
 
@@ -600,6 +623,7 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(device_attr_read)
     EXPORT_FUNCTION(device_get_channels_count)
     EXPORT_FUNCTION(device_get_channel)
+    EXPORT_FUNCTION(device_find_channel)
     EXPORT_FUNCTION(channel_is_output)
     EXPORT_FUNCTION(channel_get_id)
     EXPORT_FUNCTION(channel_get_name)

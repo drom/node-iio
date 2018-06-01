@@ -37,6 +37,13 @@
         var = CDATA(buf); \
     }
 
+#define ASSERT_BOOL(name, var) \
+    if (!name->IsBoolean()) { \
+        Nan::ThrowError(#var " must be a boolean"); \
+        return; \
+    } \
+    bool var = name->BooleanValue();
+
 #define ASSERT_UINT(name, var) \
     if (!name->IsNumber()) { \
         Nan::ThrowError(#var " must be a number"); \
