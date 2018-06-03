@@ -33,6 +33,11 @@ public:
     static const char *jsClassName() { return "iioChannel"; }
 };
 
+class iioBuffer : public JSHandle<iioBuffer> {
+public:
+    static const char *jsClassName() { return "iioBuffer"; }
+};
+
 using namespace v8;
 
 /*
@@ -362,8 +367,24 @@ NAN_METHOD(device_find_channel) {
     info.GetReturnValue().Set(jscha);
 }
 
+/*
+    Get the current sample size.
+
+    Parameters
+        dev:  A pointer to an iio_device structure
+    Returns
+        On success, the sample size in bytes
+        On error, a negative errno code is returned
+    NOTE: The sample size is not constant and will change when channels get
+    enabled or disabled.
+*/
+NAN_METHOD(device_get_sample_size) {
+    ASSERT_OBJECT(info[0], jsdev)
+    iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
+    CALL_LIBIIO_INT(iio_device_get_sample_size(dev))
+}
+
 // TODO
-// iio_device_get_sample_size() +
 // iio_device_create_buffer() +
 
 /*
@@ -587,16 +608,177 @@ NAN_METHOD(channel_attr_write) {
 // iio_channel_attr_write()
 // iio_channel_attr_write_all()
 // iio_channel_attr_write_bool()
-// iio_channel_attr_write_longlong() +
+
+/*
+    Set the value of the given channel-specific attribute.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+        attr: A NULL-terminated string corresponding to the name of the attribute
+        val:  A long long value to set the attribute to
+    Returns
+        On success, 0 is returned
+        On error, a negative errno code is returned
+*/
+// NAN_METHOD(channel_attr_write_longlong) {
+//     ASSERT_OBJECT(info[0], jscha)
+//     iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+//     CDATA_OR_NULL(info[1], attr)
+//     ASSERT_LONGLONG(info[2], src)
+//     CALL_LIBIIO_INT(iio_channel_attr_write_longlong(cha, attr, src))
+// }
+
 // iio_channel_attr_write_double()
 
 // iio_channel_get_data_format
 // iio_channel_convert_inverse
 
-// iio_buffer_first
-// iio_buffer_start
-// iio_buffer_end
-// iio_buffer_step
+/*
+    Create an input or output buffer associated to the given device.
+
+    Parameters
+        dev:        A pointer to an iio_device structure
+        samples_count:  The number of samples that the buffer should contain
+        cyclic:     If True, enable cyclic mode
+    Returns
+        On success, a pointer to an iio_buffer structure
+        On error, NULL is returned, and errno is set to the error code
+
+    NOTE: Channels that have to be written to / read from must be enabled
+    before creating the buffer.
+*/
+NAN_METHOD(device_create_buffer) {
+    ASSERT_OBJECT(info[0], jsdev)
+    iio_device *dev = (struct iio_device *)iioDevice::Resolve(jsdev);
+    ASSERT_UINT(info[1], samples_count)
+    ASSERT_BOOL(info[2], cyclic)
+    iio_buffer *buf;
+    buf = iio_device_create_buffer(dev, samples_count, cyclic);
+    Local<Object> jsbuf = iioBuffer::New(buf);
+    info.GetReturnValue().Set(jsbuf);
+}
+
+/*
+    Fetch more samples from the hardware.
+
+    Parameters
+        buf:  A pointer to an iio_buffer structure
+    Returns
+        On success, the number of bytes read is returned
+        On error, a negative errno code is returned
+
+    NOTE: Only valid for input buffers
+*/
+NAN_METHOD(buffer_refill) {
+    ASSERT_OBJECT(info[0], jsbuf)
+    iio_buffer *buf = (struct iio_buffer *)iioBuffer::Resolve(jsbuf);
+    CALL_LIBIIO_INT(iio_buffer_refill(buf))
+}
+
+/*
+    Call the supplied callback for each sample found in a buffer.
+
+    Parameters
+        buf:      A pointer to an iio_buffer structure
+        callback: A pointer to a function to call for each sample found
+        data:     A user-specified pointer that will be passed to the callback
+    Returns
+        number of bytes processed.
+
+    NOTE: The callback receives four arguments:
+        * A pointer to the iio_channel structure corresponding to the sample,
+        * A pointer to the sample itself,
+        * The length of the sample in bytes,
+        * The user-specified pointer passed to iio_buffer_foreach_sample.
+*/
+
+ssize_t sample_cb(
+    const struct iio_channel *chn,
+    void *src,
+    size_t bytes,
+    void *d
+) {
+    /* Use "src" to read or write a sample for this channel */
+}
+
+NAN_METHOD(buffer_foreach_sample) {
+    ASSERT_OBJECT(info[0], jsbuf)
+    ASSERT_FUNCTION(info[1], onData)
+    iio_buffer *buf = (struct iio_buffer *)iioBuffer::Resolve(jsbuf);
+    CALL_LIBIIO_INT(iio_buffer_foreach_sample(buf, sample_cb, NULL));
+}
+//
+// ◆ iio_buffer_foreach_sample()
+// __api ssize_t iio_buffer_foreach_sample	(	struct iio_buffer * 	buf,
+// ssize_t(*)(const struct iio_channel *chn, void *src, size_t bytes, void *d) 	callback,
+// void * 	data
+// )
+
+/*
+    Find the first sample of a channel in a buffer.
+
+    Parameters
+        buf:  A pointer to an iio_buffer structure
+        chn:  A pointer to an iio_channel structure
+    Returns
+        A pointer to the first sample found, or to the end of the buffer
+        if no sample for the given channel is present in the buffer
+    NOTE: This fonction, coupled with iio_buffer_step and iio_buffer_end,
+    can be used to iterate on all the samples of a given channel present in
+    the buffer, doing the following:
+*/
+NAN_METHOD(buffer_first) {
+    ASSERT_OBJECT(info[0], jsbuf)
+    iio_buffer *buf = (struct iio_buffer *)iioBuffer::Resolve(jsbuf);
+    ASSERT_OBJECT(info[1], jscha)
+    iio_channel *cha = (struct iio_channel *)iioChannel::Resolve(jscha);
+    char *pdat = (char *)iio_buffer_first(buf, cha);
+}
+
+/*
+    Get the start address of the buffer.
+
+    Parameters
+        buf:  A pointer to an iio_buffer structure
+    Returns
+        A pointer corresponding to the start address of the buffer
+*/
+NAN_METHOD(buffer_start) {
+    ASSERT_OBJECT(info[0], jsbuf)
+    iio_buffer *buf = (struct iio_buffer *)iioBuffer::Resolve(jsbuf);
+    char *pdat = (char *)iio_buffer_start(buf);
+}
+
+/*
+    Get the step size between two samples of one channel.
+
+    Parameters
+        buf:  A pointer to an iio_buffer structure
+    Returns
+        the difference between the addresses of two consecutive samples of one
+        same channel
+*/
+NAN_METHOD(buffer_step) {
+    ASSERT_OBJECT(info[0], jsbuf)
+    iio_buffer *buf = (struct iio_buffer *)iioBuffer::Resolve(jsbuf);
+    ptrdiff_t pinc = iio_buffer_step(buf);
+}
+
+/*
+    Get the address that follows the last sample in a buffer.
+
+    Parameters
+        buf:  A pointer to an iio_buffer structure
+    Returns
+        A pointer corresponding to the address that follows the last sample
+        present in the buffer
+*/
+NAN_METHOD(buffer_end) {
+    ASSERT_OBJECT(info[0], jsbuf)
+    iio_buffer *buf = (struct iio_buffer *)iioBuffer::Resolve(jsbuf);
+    char *pdat = (char *)iio_buffer_end(buf);
+}
+
 // iio_buffer_destroy
 
 // iio_buffer_foreach_sample() +
@@ -624,6 +806,7 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(device_get_channels_count)
     EXPORT_FUNCTION(device_get_channel)
     EXPORT_FUNCTION(device_find_channel)
+    EXPORT_FUNCTION(device_get_sample_size)
     EXPORT_FUNCTION(channel_is_output)
     EXPORT_FUNCTION(channel_get_id)
     EXPORT_FUNCTION(channel_get_name)
@@ -636,6 +819,15 @@ NAN_MODULE_INIT(Init) {
     EXPORT_FUNCTION(channel_attr_read)
     EXPORT_FUNCTION(channel_attr_write_raw)
     EXPORT_FUNCTION(channel_attr_write)
+    // EXPORT_FUNCTION(channel_attr_write_longlong)
+    EXPORT_FUNCTION(device_create_buffer)
+    EXPORT_FUNCTION(buffer_refill)
+
+    EXPORT_FUNCTION(buffer_first)
+    EXPORT_FUNCTION(buffer_step)
+    EXPORT_FUNCTION(buffer_start)
+    EXPORT_FUNCTION(buffer_end)
+    EXPORT_FUNCTION(buffer_foreach_sample)
 }
 
 NODE_MODULE(libiio, Init)
@@ -656,3 +848,4 @@ NODE_MODULE(libiio, Init)
 #undef ASSERT_SCAN_CXT
 #undef ASSERT_CXT
 #undef ASSERT_CXT_INFO
+#undef ASSERT_FUNCTION

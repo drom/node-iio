@@ -89,4 +89,11 @@
     Local<Object> jscxt = name->ToObject(); \
     iio_context_info *var = (struct iio_context_info)iioContextInfo::Resolve(jscxt);
 
+#define ASSERT_FUNCTION(name, var) \
+    if (!name->IsFunction()) { \
+        Nan::ThrowError(#var " must be a function"); \
+        return; \
+    } \
+    Local<Function> var = name.As<Function>();
+
 #endif
