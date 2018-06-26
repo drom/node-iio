@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/drom/node-iio.svg?branch=master)](https://travis-ci.org/drom/node-iio)
+[![NPM version](https://img.shields.io/npm/v/libiio.svg)](https://www.npmjs.org/package/libiio)
 
 Linux Industrial Input/Output ([IIO](https://wiki.analog.com/software/linux/docs/iio/iio)) Subsystem library ([libiio](https://wiki.analog.com/resources/tools-software/linux-software/libiio)) bindings for Node.js
 
