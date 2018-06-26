@@ -8,12 +8,12 @@ This module depends on [libiio package](https://github.com/analogdevicesinc/libi
 
 ### Install
 
-`npm i node-iio`
+`npm i libiio`
 
 ### Usage
 
 ```js
-const iio = require('node-iio');
+const iio = require('libiio');
 
 for(let i = 0; i < iio.get_backends_count(); i++) {
     console.log(iio.get_backend(i));
