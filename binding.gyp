@@ -8,7 +8,14 @@
       ],
       "libraries": [
         "-liio"
-      ],
+      ]
+    },
+    {
+      "target_name": "iioc",
+      "sources": [ "src/iio.c" ],
+      "libraries": [
+        "-liio"
+      ]
     }
   ]
 }
