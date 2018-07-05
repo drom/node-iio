@@ -63,9 +63,11 @@
 
 //// library_get_version
 
-// Get the number of available backends.
-// Returns:
-//      The number of available backends
+/*
+    Get the number of available backends.
+        Returns:
+            The number of available backends
+*/
 METHOD(get_backends_count) {
     uint32_t value = iio_get_backends_count();
 
@@ -75,12 +77,14 @@ METHOD(get_backends_count) {
 }
 
 
-// Retrieve the name of a given backend.
-// Parameters:
-//      index: The index corresponding to the attribute
-// Returns:
-//      On success, a pointer to a static NULL-terminated string
-//      If the index is invalid, NULL is returned
+/*
+    Retrieve the name of a given backend.
+        Parameters:
+            index: The index corresponding to the attribute
+        Returns:
+            On success, a pointer to a static NULL-terminated string
+            If the index is invalid, NULL is returned
+*/
 METHOD(get_backend) {
     ASSERT_ARGC(1)
     ASSERT_UINT(args[0], index)
@@ -93,7 +97,7 @@ METHOD(get_backend) {
 }
 
 /*
-    Create a scan context. +++
+    Create a scan context.
         Parameters:
             backend:    A NULL-terminated string containing the backend to use
                         for scanning. If NULL, all the available backends are used.
@@ -122,12 +126,14 @@ METHOD(create_scan_context) {
 //// context_info_get_uri_index
 //// context_info_count
 
-// Create a context from a URI description.
-// Parameters:
-//      uri: A URI describing the context location
-// Returns:
-//      On success, a pointer to a iio_context structure
-//      On failure, NULL is returned and errno is set appropriately
+/*
+    Create a context from a URI description.
+        Parameters:
+            uri: A URI describing the context location
+        Returns:
+            On success, a pointer to a iio_context structure
+            On failure, NULL is returned and errno is set appropriately
+*/
 METHOD(create_context_from_uri) {
     ASSERT_ARGC(1)
     ASSERT_STRING(args[0], uri)
@@ -141,11 +147,13 @@ METHOD(create_context_from_uri) {
     return obj;
 }
 
-// Enumerate the devices found in the given context.
-// Parameters:
-//      ctx: A pointer to an iio_context structure
-// Returns
-//      The number of devices found
+/*
+    Enumerate the devices found in the given context.
+        Parameters:
+            ctx: A pointer to an iio_context structure
+        Returns
+            The number of devices found
+*/
 METHOD(context_get_devices_count) {
     ASSERT_ARGC(1)
     ASSERT_OBJECT(args[0], obj)
