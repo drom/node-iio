@@ -2,7 +2,7 @@
   "name": "libiio",
   "version": "0.1.0",
   "description": "libiio bindings for Node.js",
-  "main": "example.js",
+  "main": "index.js",
   "gypfile": true,
   "scripts": {
     "test": "node examples/backends.js",
