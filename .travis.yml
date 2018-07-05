@@ -3,10 +3,7 @@ node_js:
 - '10'
 - '9'
 - '8'
-- '7'
 - '6'
-- '5'
-- '4'
 before_install:
 - sudo apt-get -qq update
 - wget http://swdownloads.analog.com/cse/travis_builds/master_latest_libiio-trusty.deb
