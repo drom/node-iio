@@ -46,20 +46,38 @@
         return 0; \
     } \
     char var[256]; \
-    size_t result; \
-    var ## _status = napi_get_value_string_latin1(env, name, var, 256, &result); \
+    size_t var ## _result; \
+    var ## _status = napi_get_value_string_latin1(env, name, var, 256, &var ## _result); \
     assert(var ## _status == napi_ok);
 
 #define ASSERT_OBJECT(name, var) \
-    napi_status var ## _status; \
+    napi_value var; \
     napi_valuetype var ## _valuetype; \
+    \
+    napi_status var ## _status; \
     var ## _status = napi_typeof(env, name, &var ## _valuetype); \
     assert(var ## _status == napi_ok); \
+    \
     if (var ## _valuetype != napi_object) { \
         napi_throw_type_error(env, 0, "Wrong arguments"); \
         return 0; \
     } \
-    napi_value obj = var;
+
+
+#define ASSERT_EXTERNAL(name, var) \
+    napi_valuetype var ## _valuetype; \
+    \
+    napi_status var ## _status; \
+    var ## _status = napi_typeof(env, name, &var ## _valuetype); \
+    assert(var ## _status == napi_ok); \
+    \
+    if (var ## _valuetype != napi_external) { \
+        napi_throw_type_error(env, 0, "Wrong arguments"); \
+        return 0; \
+    } \
+    var ## _status = napi_get_value_external(env, name, &cxt); \
+    assert(var ## _status == napi_ok);
+
 
 //// library_get_version
 
@@ -138,13 +156,16 @@ METHOD(create_context_from_uri) {
     ASSERT_ARGC(1)
     ASSERT_STRING(args[0], uri)
 
-    struct iio_context *cxt = malloc(256);
+    struct iio_context *cxt = malloc(1024);
     cxt = iio_create_context_from_uri(uri);
 
-    napi_value obj;
-    assert(napi_create_object(env, &obj) == napi_ok);
-    assert(napi_wrap(env, obj, (void *)cxt, 0, 0, 0) == napi_ok);
-    return obj;
+    napi_value res;
+    if (cxt) {
+        assert(napi_create_external(env, cxt, 0, 0, &res) == napi_ok);
+    } else {
+        assert(napi_get_undefined(env, &res) == napi_ok);
+    }
+    return res;
 }
 
 /*
@@ -156,15 +177,14 @@ METHOD(create_context_from_uri) {
 */
 METHOD(context_get_devices_count) {
     ASSERT_ARGC(1)
-    ASSERT_OBJECT(args[0], obj)
-
     struct iio_context* cxt;
-    assert(napi_unwrap(env, obj, (void **)(&cxt)));
+    ASSERT_EXTERNAL(args[0], cxt)
+
     uint32_t value = iio_context_get_devices_count(cxt);
 
-    napi_value result;
-    assert(napi_create_uint32(env, value, &result) == napi_ok);
-    return result;
+    napi_value res;
+    assert(napi_create_uint32(env, value, &res) == napi_ok);
+    return res;
 }
 
 
