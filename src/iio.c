@@ -55,19 +55,15 @@
 
 #define ASSERT_STRING(name, var) \
     napi_status var ## _status; \
-    napi_valuetype var ## _valuetype; \
-    var ## _status = napi_typeof(env, name, &var ## _valuetype); \
+    napi_value var ## _tmp; \
+    var ## _status = napi_coerce_to_string(env, name, &var ## _tmp); \
     if (var ## _status != napi_ok) { \
         napi_throw(env, name); \
         return 0; \
     } \
-    if (var ## _valuetype != napi_string) { \
-        napi_throw_type_error(env, 0, "Wrong arguments"); \
-        return 0; \
-    } \
     char var[256]; \
     size_t var ## _result; \
-    var ## _status = napi_get_value_string_latin1(env, name, var, 256, &var ## _result); \
+    var ## _status = napi_get_value_string_latin1(env, var ## _tmp, var, 256, &var ## _result); \
     if (var ## _status != napi_ok) { \
         napi_throw(env, name); \
         return 0; \
@@ -161,7 +157,11 @@ METHOD(create_scan_context) {
     cxt = iio_create_scan_context(uri, flags);
 
     napi_value res;
-    ASSERT(res, napi_create_external(env, cxt, 0, 0, &res))
+    if (cxt) {
+        ASSERT(res, napi_create_external(env, cxt, 0, 0, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
     return res;
 }
 
@@ -417,11 +417,15 @@ METHOD(device_attr_read) {
 
     uint32_t len1 = 1024;
     char* dst = malloc(len1);
-    uint32_t len2 = iio_device_attr_read(dev, attr, dst, len1);
+    int32_t len2 = iio_device_attr_read(dev, attr, dst, len1);
 
-    napi_value result;
-    ASSERT(result, napi_create_string_utf8(env, dst, len2, &result))
-    return result;
+    napi_value res;
+    if (len2 > 0) {
+        ASSERT(res, napi_create_string_utf8(env, dst, len2, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
 }
 
 /*
@@ -436,10 +440,10 @@ METHOD(device_get_channels_count) {
     struct iio_device *dev;
     ASSERT_EXTERNAL(args[0], dev)
 
-    uint32_t value = iio_device_get_channels_count(dev);
+    uint32_t count = iio_device_get_channels_count(dev);
 
     napi_value res;
-    ASSERT(res, napi_create_uint32(env, value, &res))
+    ASSERT(res, napi_create_uint32(env, count, &res))
     return res;
 }
 
@@ -470,7 +474,27 @@ METHOD(device_get_channel) {
 
 //// device_find_channel
 //// device_get_sample_size
-//// channel_is_output
+
+/*
+    Return True if the given channel is an output channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        True if the channel is an output channel, False otherwise
+*/
+METHOD(channel_is_output) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    bool flag = iio_channel_is_output(cha);
+
+    napi_value result;
+    ASSERT(result, napi_get_boolean(env, flag, &result))
+    return result;
+}
+
 //// channel_get_id
 
 /*
@@ -507,22 +531,226 @@ METHOD(channel_get_name) {
     struct iio_channel *cha;
     ASSERT_EXTERNAL(args[0], cha)
 
-    const char *res = iio_channel_get_name(cha);
+    const char *str = iio_channel_get_name(cha);
+
+    napi_value res;
+    if (str) {
+        ASSERT(res, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
+}
+
+/*
+    Returns True if the channel is enabled.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        True if the channel is enabled, False otherwise
+*/
+METHOD(channel_is_enabled) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    bool flag = iio_channel_is_enabled(cha);
 
     napi_value result;
-    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    ASSERT(result, napi_get_boolean(env, flag, &result))
     return result;
 }
 
-//// channel_is_enabled
-//// channel_get_type
-//// channel_disable
-//// channel_enable
-//// channel_get_attrs_count
-//// channel_get_attr
-//// channel_attr_read
+/*
+    Get the type of the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        The type of the channel
+*/
+METHOD(channel_get_type) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    uint32_t type = iio_channel_get_type(cha);
+
+    napi_value res;
+    ASSERT(res, napi_create_uint32(env, type, &res))
+    return res;
+}
+
+/*
+    Disable the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+*/
+METHOD(channel_disable) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    iio_channel_disable(cha);
+
+    napi_value res;
+    ASSERT(res, napi_get_undefined(env, &res))
+    return res;
+}
+
+/*
+    Enable the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+
+    NOTE:Before creating an iio_buffer structure with iio_device_create_buffer,
+    it is required to enable at least one channel of the device to read from.
+*/
+METHOD(channel_enable) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    iio_channel_enable(cha);
+
+    napi_value res;
+    ASSERT(res, napi_get_undefined(env, &res))
+    return res;
+}
+
+/*
+    Enumerate the channel-specific attributes of the given channel.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        The number of channel-specific attributes found
+*/
+METHOD(channel_get_attrs_count) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    const uint32_t count = iio_channel_get_attrs_count(cha);
+
+    napi_value res;
+    ASSERT(res, napi_create_uint32(env, count, &res))
+    return res;
+}
+
+/*
+    Get the channel-specific attribute present at the given index.
+
+    Parameters
+        chn:    A pointer to an iio_channel structure
+        index:  The index corresponding to the attribute
+    Returns
+        On success, a pointer to a static NULL-terminated string
+        If the index is invalid, NULL is returned
+*/
+METHOD(channel_get_attr) {
+    ASSERT_ARGC(2)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+    ASSERT_UINT(args[1], index)
+
+    const char *str = iio_channel_get_attr(cha, index);
+
+    napi_value res;
+    if (str) {
+        ASSERT(res, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
+}
+
+/*
+    Read the content of the given channel-specific attribute.
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+        attr: A NULL-terminated string corresponding to the name of the attribute
+        dst:  A pointer to the memory area where the NULL-terminated string
+              corresponding to the value read will be stored
+        len:  The available length of the memory area, in bytes
+    Returns
+        On success, the number of bytes written to the buffer
+        On error, a negative errno code is returned
+
+    NOTE:By passing NULL as the "attr" argument to iio_channel_attr_read, it is
+    now possible to read all of the attributes of a channel.
+
+    The buffer is filled with one block of data per attribute of the channel,
+    by the order they appear in the iio_channel structure.
+
+    The first four bytes of one block correspond to a 32-bit signed value in
+    network order. If negative, it corresponds to the errno code that were
+    returned when reading the attribute; if positive, it corresponds to the
+    length of the data read. In that case, the rest of the block contains the data.
+*/
+
+METHOD(channel_attr_read) {
+    ASSERT_ARGC(2)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+    ASSERT_STRING(args[1], attr)
+
+    uint32_t len1 = 1024;
+    char* dst = malloc(len1);
+    int32_t len2 = iio_channel_attr_read(cha, attr, dst, len1);
+
+    napi_value res;
+    if (len2 > 0) {
+        ASSERT(res, napi_create_string_utf8(env, dst, len2, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
+}
+
 //// channel_attr_write_raw
-//// channel_attr_write
+
+/*
+    Set the value of the given channel-specific attribute.
+
+    Parameters
+        chn:    A pointer to an iio_channel structure
+        attr:   A NULL-terminated string corresponding to the name of the attribute
+        src:    A NULL-terminated string to set the attribute to
+    Returns
+        On success, the number of bytes written
+        On error, a negative errno code is returned
+
+    NOTE: By passing NULL as the "attr" argument to iio_channel_attr_write,
+    it is now possible to write all of the attributes of a channel.
+
+    The buffer must contain one block of data per attribute of the channel,
+    by the order they appear in the iio_channel structure.
+
+    The first four bytes of one block correspond to a 32-bit signed value in
+    network order. If negative, the attribute is not written; if positive,
+    it corresponds to the length of the data to write. In that case,
+    the rest of the block must contain the data.
+*/
+METHOD(channel_attr_write) {
+    ASSERT_ARGC(3)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+    ASSERT_STRING(args[1], attr)
+    ASSERT_STRING(args[2], src)
+
+    const int32_t len = iio_channel_attr_write(cha, attr, src);
+
+    napi_value res;
+    ASSERT(res, napi_create_int32(env, len, &res))
+    return res;
+}
+
+
 //// device_create_buffer
 //// buffer_refill
 //// buffer_first
@@ -556,18 +784,18 @@ napi_value Init(napi_env env, napi_value exports) {
 
     // DECLARE_NAPI_METHOD("device_find_channel", device_find_channel)
     // DECLARE_NAPI_METHOD("device_get_sample_size", device_get_sample_size)
-    // DECLARE_NAPI_METHOD("channel_is_output", channel_is_output)
+    DECLARE_NAPI_METHOD("channel_is_output", channel_is_output)
     DECLARE_NAPI_METHOD("channel_get_id", channel_get_id)
     DECLARE_NAPI_METHOD("channel_get_name", channel_get_name)
-    // DECLARE_NAPI_METHOD("channel_is_enabled", channel_is_enabled)
-    // DECLARE_NAPI_METHOD("channel_get_type", channel_get_type)
-    // DECLARE_NAPI_METHOD("channel_disable", channel_disable)
-    // DECLARE_NAPI_METHOD("channel_enable", channel_enable)
-    // DECLARE_NAPI_METHOD("channel_get_attrs_count", channel_get_attrs_count)
-    // DECLARE_NAPI_METHOD("channel_get_attr", channel_get_attr)
-    // DECLARE_NAPI_METHOD("channel_attr_read", channel_attr_read)
+    DECLARE_NAPI_METHOD("channel_is_enabled", channel_is_enabled)
+    DECLARE_NAPI_METHOD("channel_get_type", channel_get_type)
+    DECLARE_NAPI_METHOD("channel_disable", channel_disable)
+    DECLARE_NAPI_METHOD("channel_enable", channel_enable)
+    DECLARE_NAPI_METHOD("channel_get_attrs_count", channel_get_attrs_count)
+    DECLARE_NAPI_METHOD("channel_get_attr", channel_get_attr)
+    DECLARE_NAPI_METHOD("channel_attr_read", channel_attr_read)
     // DECLARE_NAPI_METHOD("channel_attr_write_raw", channel_attr_write_raw)
-    // DECLARE_NAPI_METHOD("channel_attr_write", channel_attr_write)
+    DECLARE_NAPI_METHOD("channel_attr_write", channel_attr_write)
     // DECLARE_NAPI_METHOD("device_create_buffer", device_create_buffer)
     // DECLARE_NAPI_METHOD("buffer_refill", buffer_refill)
     // DECLARE_NAPI_METHOD("buffer_first", buffer_first)

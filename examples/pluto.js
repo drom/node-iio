@@ -3,7 +3,7 @@
 
 const iio = require('../index.js');
 
-const contexts = iio.discover();
+const contexts = iio.discover('usb');
 
 const pluto0 = contexts[0].devices;
 
