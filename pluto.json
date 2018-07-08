@@ -1,0 +1,960 @@
+[
+    {
+        "idx": 0,
+        "devices": {
+            "cf-ad9361-dds-core-lpc": {
+                "idx": 0,
+                "id": "iio:device3",
+                "name": "cf-ad9361-dds-core-lpc",
+                "obj": {},
+                "attr": {},
+                "chan": {
+                    "input": {},
+                    "output": {
+                        "voltage0": {
+                            "id": "voltage0",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "calibscale": {
+                                    "key": "calibscale",
+                                    "value": "1.000000\u0000"
+                                },
+                                "calibphase": {
+                                    "key": "calibphase",
+                                    "value": "0.000000\u0000"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "30720000 3840000 \u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        },
+                        "voltage1": {
+                            "id": "voltage1",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "calibphase": {
+                                    "key": "calibphase",
+                                    "value": "0.000000\u0000"
+                                },
+                                "calibscale": {
+                                    "key": "calibscale",
+                                    "value": "1.000000\u0000"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "30720000 3840000 \u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        },
+                        "altvoltage3": {
+                            "id": "altvoltage3",
+                            "name": "TX1_Q_F2",
+                            "obj": {},
+                            "type": "ALTVOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1\u0000"
+                                },
+                                "phase": {
+                                    "key": "phase",
+                                    "value": "0\u0000"
+                                },
+                                "frequency": {
+                                    "key": "frequency",
+                                    "value": "9279985\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.000000\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        },
+                        "altvoltage1": {
+                            "id": "altvoltage1",
+                            "name": "TX1_I_F2",
+                            "obj": {},
+                            "type": "ALTVOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "phase": {
+                                    "key": "phase",
+                                    "value": "90000\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.000000\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1\u0000"
+                                },
+                                "frequency": {
+                                    "key": "frequency",
+                                    "value": "9279985\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        },
+                        "altvoltage0": {
+                            "id": "altvoltage0",
+                            "name": "TX1_I_F1",
+                            "obj": {},
+                            "type": "ALTVOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "phase": {
+                                    "key": "phase",
+                                    "value": "90000\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "1.000000\u0000"
+                                },
+                                "frequency": {
+                                    "key": "frequency",
+                                    "value": "9843\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        },
+                        "altvoltage2": {
+                            "id": "altvoltage2",
+                            "name": "TX1_Q_F1",
+                            "obj": {},
+                            "type": "ALTVOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1\u0000"
+                                },
+                                "phase": {
+                                    "key": "phase",
+                                    "value": "0\u0000"
+                                },
+                                "frequency": {
+                                    "key": "frequency",
+                                    "value": "9279985\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.000000\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ad9361-phy": {
+                "idx": 1,
+                "id": "iio:device1",
+                "name": "ad9361-phy",
+                "obj": {},
+                "attr": {
+                    "dcxo_tune_coarse": {
+                        "key": "dcxo_tune_coarse"
+                    },
+                    "rx_path_rates": {
+                        "key": "rx_path_rates",
+                        "value": "BBPLL:983040009 ADC:245760002 R2:122880001 R1:61440000 RF:30720000 RXSAMP:30720000\u0000"
+                    },
+                    "trx_rate_governor": {
+                        "key": "trx_rate_governor",
+                        "value": "nominal\u0000"
+                    },
+                    "calib_mode_available": {
+                        "key": "calib_mode_available",
+                        "value": "auto manual manual_tx_quad tx_quad rf_dc_offs rssi_gain_step\u0000"
+                    },
+                    "xo_correction_available": {
+                        "key": "xo_correction_available",
+                        "value": "[39991925 1 40007923]\u0000"
+                    },
+                    "gain_table_config": {
+                        "key": "gain_table_config"
+                    },
+                    "dcxo_tune_fine": {
+                        "key": "dcxo_tune_fine"
+                    },
+                    "dcxo_tune_fine_available": {
+                        "key": "dcxo_tune_fine_available",
+                        "value": "[0 0 0]\u0000"
+                    },
+                    "ensm_mode_available": {
+                        "key": "ensm_mode_available",
+                        "value": "sleep wait alert fdd pinctrl pinctrl_fdd_indep\u0000"
+                    },
+                    "multichip_sync": {
+                        "key": "multichip_sync"
+                    },
+                    "rssi_gain_step_error": {
+                        "key": "rssi_gain_step_error",
+                        "value": "lna_error: 0 0 0 0\nmixer_error: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\ngain_step_calib_reg_val: 0 0 0 0 0\u0000"
+                    },
+                    "dcxo_tune_coarse_available": {
+                        "key": "dcxo_tune_coarse_available",
+                        "value": "[0 0 0]\u0000"
+                    },
+                    "tx_path_rates": {
+                        "key": "tx_path_rates",
+                        "value": "BBPLL:983040009 DAC:122880001 T2:122880001 T1:61440000 TF:30720000 TXSAMP:30720000\u0000"
+                    },
+                    "trx_rate_governor_available": {
+                        "key": "trx_rate_governor_available",
+                        "value": "nominal highest_osr\u0000"
+                    },
+                    "xo_correction": {
+                        "key": "xo_correction",
+                        "value": "39999924\u0000"
+                    },
+                    "ensm_mode": {
+                        "key": "ensm_mode",
+                        "value": "fdd\u0000"
+                    },
+                    "filter_fir_config": {
+                        "key": "filter_fir_config",
+                        "value": "FIR Rx: 0,0 Tx: 0,0\u0000"
+                    },
+                    "calib_mode": {
+                        "key": "calib_mode",
+                        "value": "auto\u0000"
+                    }
+                },
+                "chan": {
+                    "input": {
+                        "voltage0": {
+                            "id": "voltage0",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "hardwaregain_available": {
+                                    "key": "hardwaregain_available",
+                                    "value": "[-3 1 71]\u0000"
+                                },
+                                "hardwaregain": {
+                                    "key": "hardwaregain",
+                                    "value": "18.000000 dB\u0000"
+                                },
+                                "rssi": {
+                                    "key": "rssi",
+                                    "value": "74.75 dB\u0000"
+                                },
+                                "rf_port_select": {
+                                    "key": "rf_port_select",
+                                    "value": "A_BALANCED\u0000"
+                                },
+                                "gain_control_mode": {
+                                    "key": "gain_control_mode",
+                                    "value": "manual\u0000"
+                                },
+                                "rf_port_select_available": {
+                                    "key": "rf_port_select_available",
+                                    "value": "A_BALANCED B_BALANCED C_BALANCED A_N A_P B_N B_P C_N C_P TX_MONITOR1 TX_MONITOR2 TX_MONITOR1_2\u0000"
+                                },
+                                "rf_bandwidth": {
+                                    "key": "rf_bandwidth",
+                                    "value": "18000000\u0000"
+                                },
+                                "rf_dc_offset_tracking_en": {
+                                    "key": "rf_dc_offset_tracking_en",
+                                    "value": "1\u0000"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "[2083333 1 61440000]\u0000"
+                                },
+                                "quadrature_tracking_en": {
+                                    "key": "quadrature_tracking_en",
+                                    "value": "1\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                },
+                                "gain_control_mode_available": {
+                                    "key": "gain_control_mode_available",
+                                    "value": "manual fast_attack slow_attack hybrid\u0000"
+                                },
+                                "filter_fir_en": {
+                                    "key": "filter_fir_en",
+                                    "value": "0\u0000"
+                                },
+                                "rf_bandwidth_available": {
+                                    "key": "rf_bandwidth_available",
+                                    "value": "[200000 1 56000000]\u0000"
+                                },
+                                "bb_dc_offset_tracking_en": {
+                                    "key": "bb_dc_offset_tracking_en",
+                                    "value": "1\u0000"
+                                }
+                            }
+                        },
+                        "temp0": {
+                            "id": "temp0",
+                            "obj": {},
+                            "type": "TEMP",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "input": {
+                                    "key": "input",
+                                    "value": "34211\u0000"
+                                }
+                            }
+                        },
+                        "voltage2": {
+                            "id": "voltage2",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "offset": {
+                                    "key": "offset",
+                                    "value": "57\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.305250\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "728\u0000"
+                                },
+                                "rf_port_select_available": {
+                                    "key": "rf_port_select_available",
+                                    "value": "A_BALANCED B_BALANCED C_BALANCED A_N A_P B_N B_P C_N C_P TX_MONITOR1 TX_MONITOR2 TX_MONITOR1_2\u0000"
+                                },
+                                "rf_bandwidth": {
+                                    "key": "rf_bandwidth",
+                                    "value": "18000000\u0000"
+                                },
+                                "rf_dc_offset_tracking_en": {
+                                    "key": "rf_dc_offset_tracking_en",
+                                    "value": "1\u0000"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "[2083333 1 61440000]\u0000"
+                                },
+                                "quadrature_tracking_en": {
+                                    "key": "quadrature_tracking_en",
+                                    "value": "1\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                },
+                                "gain_control_mode_available": {
+                                    "key": "gain_control_mode_available",
+                                    "value": "manual fast_attack slow_attack hybrid\u0000"
+                                },
+                                "filter_fir_en": {
+                                    "key": "filter_fir_en",
+                                    "value": "0\u0000"
+                                },
+                                "rf_bandwidth_available": {
+                                    "key": "rf_bandwidth_available",
+                                    "value": "[200000 1 56000000]\u0000"
+                                },
+                                "bb_dc_offset_tracking_en": {
+                                    "key": "bb_dc_offset_tracking_en",
+                                    "value": "1\u0000"
+                                }
+                            }
+                        },
+                        "out": {
+                            "id": "out",
+                            "obj": {},
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "voltage_filter_fir_en": {
+                                    "key": "voltage_filter_fir_en",
+                                    "value": "0\u0000"
+                                }
+                            }
+                        }
+                    },
+                    "output": {
+                        "altvoltage1": {
+                            "id": "altvoltage1",
+                            "name": "TX_LO",
+                            "obj": {},
+                            "type": "ALTVOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "external": {
+                                    "key": "external",
+                                    "value": "0\u0000"
+                                },
+                                "frequency": {
+                                    "key": "frequency",
+                                    "value": "2450000000\u0000"
+                                },
+                                "fastlock_store": {
+                                    "key": "fastlock_store",
+                                    "value": "0\u0000"
+                                },
+                                "fastlock_recall": {
+                                    "key": "fastlock_recall"
+                                },
+                                "powerdown": {
+                                    "key": "powerdown",
+                                    "value": "0\u0000"
+                                },
+                                "fastlock_save": {
+                                    "key": "fastlock_save",
+                                    "value": "0 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255\u0000"
+                                },
+                                "frequency_available": {
+                                    "key": "frequency_available",
+                                    "value": "[325000000 1 3800000000]\u0000"
+                                },
+                                "fastlock_load": {
+                                    "key": "fastlock_load",
+                                    "value": "0\u0000"
+                                }
+                            }
+                        },
+                        "voltage3": {
+                            "id": "voltage3",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "1.000000\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "306\u0000"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "[2083333 1 61440000]\u0000"
+                                },
+                                "rf_port_select_available": {
+                                    "key": "rf_port_select_available",
+                                    "value": "A B\u0000"
+                                },
+                                "filter_fir_en": {
+                                    "key": "filter_fir_en",
+                                    "value": "0\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                },
+                                "rf_bandwidth_available": {
+                                    "key": "rf_bandwidth_available",
+                                    "value": "[200000 1 40000000]\u0000"
+                                },
+                                "rf_bandwidth": {
+                                    "key": "rf_bandwidth",
+                                    "value": "18000000\u0000"
+                                }
+                            }
+                        },
+                        "altvoltage0": {
+                            "id": "altvoltage0",
+                            "name": "RX_LO",
+                            "obj": {},
+                            "type": "ALTVOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "frequency_available": {
+                                    "key": "frequency_available",
+                                    "value": "[325000000 1 3800000000]\u0000"
+                                },
+                                "fastlock_save": {
+                                    "key": "fastlock_save",
+                                    "value": "0 254,254,254,254,254,254,254,254,254,254,254,254,254,254,254,254\u0000"
+                                },
+                                "powerdown": {
+                                    "key": "powerdown",
+                                    "value": "0\u0000"
+                                },
+                                "fastlock_load": {
+                                    "key": "fastlock_load",
+                                    "value": "0\u0000"
+                                },
+                                "fastlock_store": {
+                                    "key": "fastlock_store",
+                                    "value": "0\u0000"
+                                },
+                                "frequency": {
+                                    "key": "frequency",
+                                    "value": "2400000000\u0000"
+                                },
+                                "external": {
+                                    "key": "external",
+                                    "value": "0\u0000"
+                                },
+                                "fastlock_recall": {
+                                    "key": "fastlock_recall"
+                                }
+                            }
+                        },
+                        "voltage2": {
+                            "id": "voltage2",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "306\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "1.000000\u0000"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "[2083333 1 61440000]\u0000"
+                                },
+                                "rf_port_select_available": {
+                                    "key": "rf_port_select_available",
+                                    "value": "A B\u0000"
+                                },
+                                "filter_fir_en": {
+                                    "key": "filter_fir_en",
+                                    "value": "0\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                },
+                                "rf_bandwidth_available": {
+                                    "key": "rf_bandwidth_available",
+                                    "value": "[200000 1 40000000]\u0000"
+                                },
+                                "rf_bandwidth": {
+                                    "key": "rf_bandwidth",
+                                    "value": "18000000\u0000"
+                                }
+                            }
+                        },
+                        "voltage0": {
+                            "id": "voltage0",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": true,
+                            "isEnabled": false,
+                            "attr": {
+                                "rf_port_select": {
+                                    "key": "rf_port_select",
+                                    "value": "A\u0000"
+                                },
+                                "hardwaregain": {
+                                    "key": "hardwaregain",
+                                    "value": "-18.000000 dB\u0000"
+                                },
+                                "rssi": {
+                                    "key": "rssi",
+                                    "value": "0.00 dB\u0000"
+                                },
+                                "hardwaregain_available": {
+                                    "key": "hardwaregain_available",
+                                    "value": "[0 250 89750]\u0000"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "[2083333 1 61440000]\u0000"
+                                },
+                                "rf_port_select_available": {
+                                    "key": "rf_port_select_available",
+                                    "value": "A B\u0000"
+                                },
+                                "filter_fir_en": {
+                                    "key": "filter_fir_en",
+                                    "value": "0\u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                },
+                                "rf_bandwidth_available": {
+                                    "key": "rf_bandwidth_available",
+                                    "value": "[200000 1 40000000]\u0000"
+                                },
+                                "rf_bandwidth": {
+                                    "key": "rf_bandwidth",
+                                    "value": "18000000\u0000"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "cf-ad9361-lpc": {
+                "idx": 2,
+                "id": "iio:device4",
+                "name": "cf-ad9361-lpc",
+                "obj": {},
+                "attr": {},
+                "chan": {
+                    "input": {
+                        "voltage0": {
+                            "id": "voltage0",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "calibphase": {
+                                    "key": "calibphase",
+                                    "value": "0.000000\u0000"
+                                },
+                                "calibbias": {
+                                    "key": "calibbias",
+                                    "value": "0\u0000"
+                                },
+                                "calibscale": {
+                                    "key": "calibscale",
+                                    "value": "1.000000\u0000"
+                                },
+                                "samples_pps": {
+                                    "key": "samples_pps"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "30720000 3840000 \u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        },
+                        "voltage1": {
+                            "id": "voltage1",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "calibbias": {
+                                    "key": "calibbias",
+                                    "value": "0\u0000"
+                                },
+                                "calibphase": {
+                                    "key": "calibphase",
+                                    "value": "0.000000\u0000"
+                                },
+                                "calibscale": {
+                                    "key": "calibscale",
+                                    "value": "1.000000\u0000"
+                                },
+                                "samples_pps": {
+                                    "key": "samples_pps"
+                                },
+                                "sampling_frequency_available": {
+                                    "key": "sampling_frequency_available",
+                                    "value": "30720000 3840000 \u0000"
+                                },
+                                "sampling_frequency": {
+                                    "key": "sampling_frequency",
+                                    "value": "30720000\u0000"
+                                }
+                            }
+                        }
+                    },
+                    "output": {}
+                }
+            },
+            "xadc": {
+                "idx": 3,
+                "id": "iio:device2",
+                "name": "xadc",
+                "obj": {},
+                "attr": {
+                    "sampling_frequency": {
+                        "key": "sampling_frequency",
+                        "value": "961538\u0000"
+                    }
+                },
+                "chan": {
+                    "input": {
+                        "voltage5": {
+                            "id": "voltage5",
+                            "name": "vccoddr",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1822\u0000"
+                                }
+                            }
+                        },
+                        "voltage0": {
+                            "id": "voltage0",
+                            "name": "vccint",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1362\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                }
+                            }
+                        },
+                        "voltage4": {
+                            "id": "voltage4",
+                            "name": "vccpaux",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "2436\u0000"
+                                }
+                            }
+                        },
+                        "temp0": {
+                            "id": "temp0",
+                            "obj": {},
+                            "type": "TEMP",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "123.040771484\n\u0000"
+                                },
+                                "offset": {
+                                    "key": "offset",
+                                    "value": "-2219\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "2630\u0000"
+                                }
+                            }
+                        },
+                        "voltage7": {
+                            "id": "voltage7",
+                            "name": "vrefn",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "-13\u0000"
+                                }
+                            }
+                        },
+                        "voltage1": {
+                            "id": "voltage1",
+                            "name": "vccaux",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "2439\u0000"
+                                }
+                            }
+                        },
+                        "voltage2": {
+                            "id": "voltage2",
+                            "name": "vccbram",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1370\u0000"
+                                }
+                            }
+                        },
+                        "voltage3": {
+                            "id": "voltage3",
+                            "name": "vccpint",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1359\u0000"
+                                }
+                            }
+                        },
+                        "voltage8": {
+                            "id": "voltage8",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "3675\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.244140625\n\u0000"
+                                }
+                            }
+                        },
+                        "voltage6": {
+                            "id": "voltage6",
+                            "name": "vrefp",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "1688\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.732421875\n\u0000"
+                                }
+                            }
+                        }
+                    },
+                    "output": {}
+                }
+            },
+            "adm1177": {
+                "idx": 4,
+                "id": "iio:device0",
+                "name": "adm1177",
+                "obj": {},
+                "attr": {},
+                "chan": {
+                    "input": {
+                        "voltage0": {
+                            "id": "voltage0",
+                            "obj": {},
+                            "type": "VOLTAGE",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "6.433105468\n\u0000"
+                                },
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "740\u0000"
+                                }
+                            }
+                        },
+                        "current0": {
+                            "id": "current0",
+                            "obj": {},
+                            "type": "CURRENT",
+                            "isOutput": false,
+                            "isEnabled": false,
+                            "attr": {
+                                "raw": {
+                                    "key": "raw",
+                                    "value": "779\u0000"
+                                },
+                                "scale": {
+                                    "key": "scale",
+                                    "value": "0.516601562\n\u0000"
+                                }
+                            }
+                        }
+                    },
+                    "output": {}
+                }
+            }
+        }
+    }
+]
