@@ -1,6 +1,6 @@
 'use strict';
 
-const iio = require('bindings')('iio.node');
+const iio = require('bindings')('iioc.node');
 const chanType = require('./lib/chan-type');
 const modifier = require('./lib/modifier');
 const genDiscover = require('./lib/discover');

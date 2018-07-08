@@ -1,22 +1,34 @@
 #include <iio.h>
 #include <node_api.h>
-#include <assert.h>
 
 #define DECLARE_NAPI_METHOD(name, func) \
     napi_status func ## _status; \
     napi_property_descriptor func ## _desc = { name, 0, func, 0, 0, 0, napi_default, 0 }; \
     func ## _status = napi_define_properties(env, exports, 1, &func ## _desc); \
-    assert(func ## _status == napi_ok); \
+    if (func ## _status != napi_ok) { \
+        napi_throw_error(env, 0, "Error"); \
+    }
 
 #define METHOD(name) \
     napi_value name(napi_env env, napi_callback_info info)
+
+#define ASSERT(val, expr) \
+    { \
+        napi_status status = expr; \
+        if (status != napi_ok) { \
+            napi_throw(env, val); \
+        } \
+    }
 
 #define ASSERT_ARGC(count) \
     size_t argc = count; \
     napi_value args[count]; \
     napi_status argc_status; \
     argc_status = napi_get_cb_info(env, info, &argc, args, 0, 0); \
-    assert(argc_status == napi_ok); \
+    if (argc_status != napi_ok) { \
+        napi_throw_error(env, 0, "Error"); \
+        return 0; \
+    } \
     if (argc < count) { \
         napi_throw_type_error(env, 0, "Wrong number of arguments"); \
         return 0; \
@@ -26,21 +38,29 @@
     napi_status var ## _status; \
     napi_valuetype var ## _valuetype; \
     var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    assert(var ## _status == napi_ok); \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    } \
     if (var ## _valuetype != napi_number) { \
         napi_throw_type_error(env, 0, "Wrong arguments"); \
         return 0; \
     } \
     uint32_t var; \
     var ## _status = napi_get_value_uint32(env, name, &var); \
-    assert(var ## _status == napi_ok);
-
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    }
 
 #define ASSERT_STRING(name, var) \
     napi_status var ## _status; \
     napi_valuetype var ## _valuetype; \
     var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    assert(var ## _status == napi_ok); \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    } \
     if (var ## _valuetype != napi_string) { \
         napi_throw_type_error(env, 0, "Wrong arguments"); \
         return 0; \
@@ -48,7 +68,11 @@
     char var[256]; \
     size_t var ## _result; \
     var ## _status = napi_get_value_string_latin1(env, name, var, 256, &var ## _result); \
-    assert(var ## _status == napi_ok);
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    }
+
 
 #define ASSERT_OBJECT(name, var) \
     napi_value var; \
@@ -56,28 +80,32 @@
     \
     napi_status var ## _status; \
     var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    assert(var ## _status == napi_ok); \
-    \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    } \
     if (var ## _valuetype != napi_object) { \
         napi_throw_type_error(env, 0, "Wrong arguments"); \
         return 0; \
     } \
 
-
 #define ASSERT_EXTERNAL(name, var) \
     napi_valuetype var ## _valuetype; \
-    \
     napi_status var ## _status; \
     var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    assert(var ## _status == napi_ok); \
-    \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    } \
     if (var ## _valuetype != napi_external) { \
         napi_throw_type_error(env, 0, "Wrong arguments"); \
         return 0; \
     } \
-    var ## _status = napi_get_value_external(env, name, &cxt); \
-    assert(var ## _status == napi_ok);
-
+    var ## _status = napi_get_value_external(env, name, (void **)(&var)); \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    } \
 
 //// library_get_version
 
@@ -90,7 +118,7 @@ METHOD(get_backends_count) {
     uint32_t value = iio_get_backends_count();
 
     napi_value result;
-    assert(napi_create_uint32(env, value, &result) == napi_ok);
+    ASSERT(result, napi_create_uint32(env, value, &result))
     return result;
 }
 
@@ -110,7 +138,7 @@ METHOD(get_backend) {
     const char *res = iio_get_backend(index);
 
     napi_value result;
-    assert(napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result) == napi_ok);
+    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
     return result;
 }
 
@@ -132,17 +160,75 @@ METHOD(create_scan_context) {
     struct iio_scan_context *cxt;
     cxt = iio_create_scan_context(uri, flags);
 
-    napi_value obj;
-    assert(napi_create_object(env, &obj) == napi_ok);
-    assert(napi_wrap(env, obj, (void *)cxt, 0, 0, 0) == napi_ok);
-    return obj;
+    napi_value res;
+    ASSERT(res, napi_create_external(env, cxt, 0, 0, &res))
+    return res;
 }
 
+/*
+    Enumerate available contexts.
+        Parameters:
+            ctx:    A pointer to an iio_scan_context structure
+            info:   A pointer to a 'const struct iio_context_info **' typed variable.
+                    The pointed variable will be initialized on success.
+        Returns:
+            On success, the number of contexts found.
+            On failure, a negative error number.
+*/
+METHOD(scan_context_get_info_list) {
+    ASSERT_ARGC(1)
+    struct iio_scan_context *cxt;
+    ASSERT_EXTERNAL(args[0], cxt)
 
-//// scan_context_get_info_list
-//// context_info_get_description_index
-//// context_info_get_uri_index
-//// context_info_count
+    struct iio_context_info **icxt;
+    uint32_t count = iio_scan_context_get_info_list(cxt, &icxt);
+
+    napi_value res, length, ref;
+    ASSERT(res, napi_create_uint32(env, count, &length))
+    ASSERT(res, napi_create_external(env, icxt, 0, 0, &ref))
+    ASSERT(res, napi_create_object(env, &res))
+    ASSERT(res, napi_set_named_property(env, res, "length", length))
+    ASSERT(res, napi_set_named_property(env, res, "ref", ref))
+    return res;
+}
+
+/*
+    Get the URI of a discovered context.
+        Parameters
+            info:   A pointer to an iio_context_info structure
+        Returns
+            A pointer to a static NULL-terminated string
+*/
+METHOD(context_info_get_uri) {
+    ASSERT_ARGC(1)
+    struct iio_context_info **icxt;
+    ASSERT_EXTERNAL(args[0], icxt)
+
+    const char* str = iio_context_info_get_uri(*icxt);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &result));
+    return result;
+}
+
+/*
+    Get a description of a discovered context.
+        Parameters
+            info:   A pointer to an iio_context_info structure
+        Returns
+            A pointer to a static NULL-terminated string
+*/
+METHOD(context_info_get_description) {
+    ASSERT_ARGC(1)
+    struct iio_context_info **icxt;
+    ASSERT_EXTERNAL(args[0], icxt)
+
+    const char* str = iio_context_info_get_description(*icxt);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &result));
+    return result;
+}
 
 /*
     Create a context from a URI description.
@@ -156,14 +242,14 @@ METHOD(create_context_from_uri) {
     ASSERT_ARGC(1)
     ASSERT_STRING(args[0], uri)
 
-    struct iio_context *cxt = malloc(1024);
+    struct iio_context *cxt;
     cxt = iio_create_context_from_uri(uri);
 
     napi_value res;
     if (cxt) {
-        assert(napi_create_external(env, cxt, 0, 0, &res) == napi_ok);
+        ASSERT(res, napi_create_external(env, cxt, 0, 0, &res))
     } else {
-        assert(napi_get_undefined(env, &res) == napi_ok);
+        ASSERT(res, napi_get_undefined(env, &res))
     }
     return res;
 }
@@ -183,25 +269,251 @@ METHOD(context_get_devices_count) {
     uint32_t value = iio_context_get_devices_count(cxt);
 
     napi_value res;
-    assert(napi_create_uint32(env, value, &res) == napi_ok);
+    ASSERT(res, napi_create_uint32(env, value, &res))
+    return res;
+}
+
+//// context_get_device
+/*
+    Get the device present at the given index.
+        Parameters
+            ctx: A pointer to an iio_context structure
+            index:The index corresponding to the device
+        Returns
+            On success, a pointer to an iio_device structure
+            If the index is invalid, NULL is returned
+*/
+METHOD(context_get_device) {
+    ASSERT_ARGC(2)
+    struct iio_context* cxt;
+    ASSERT_EXTERNAL(args[0], cxt)
+    ASSERT_UINT(args[1], index)
+
+    struct iio_device *dev;
+    dev = iio_context_get_device(cxt, index);
+
+    napi_value res;
+    if (dev) {
+        ASSERT(res, napi_create_external(env, dev, 0, 0, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
+}
+
+//// context_find_device
+
+//// device_get_id
+
+// Retrieve the device ID (e.g. iio:device0)
+// Parameters
+//      dev: A pointer to an iio_device structure
+// Returns
+//      A pointer to a static NULL-terminated string
+METHOD(device_get_id) {
+    ASSERT_ARGC(1)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+
+    const char *res = iio_device_get_id(dev);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    return result;
+}
+
+// Retrieve the device name (e.g. xadc)
+// Parameters
+//      dev: A pointer to an iio_device structure
+// Returns
+//      A pointer to a static NULL-terminated string
+//      NOTE: if the device has no name, NULL is returned.
+METHOD(device_get_name) {
+    ASSERT_ARGC(1)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+
+    const char *res = iio_device_get_name(dev);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    return result;
+}
+
+/*
+    Enumerate the device-specific attributes of the given device.
+
+    Parameters
+        dev:  A pointer to an iio_device structure
+    Returns
+        The number of device-specific attributes found
+*/
+METHOD(device_get_attrs_count) {
+    ASSERT_ARGC(1)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+
+    uint32_t value = iio_device_get_attrs_count(dev);
+
+    napi_value res;
+    ASSERT(res, napi_create_uint32(env, value, &res))
     return res;
 }
 
 
-//// context_get_device
-//// context_find_device
-//// device_get_id
-//// device_get_name
-//// device_get_attrs_count
-//// device_get_attr
-//// device_attr_read
-//// device_get_channels_count
-//// device_get_channel
+/*
+    Get the device-specific attribute present at the given index.
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+        index:  The index corresponding to the attribute
+    Returns
+        On success, a pointer to a static NULL-terminated string
+        If the index is invalid, NULL is returned
+*/
+METHOD(device_get_attr) {
+    ASSERT_ARGC(2)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+    ASSERT_UINT(args[1], index)
+
+    const char* res = iio_device_get_attr(dev, index);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    return result;
+}
+
+/*
+    Read the content of the given device-specific attribute.
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+        attr:   A NULL-terminated string corresponding to the name of the attribute
+        dst:    A pointer to the memory area where the NULL-terminated string
+                corresponding to the value read will be stored
+        len:    The available length of the memory area, in bytes
+
+    Returns
+        On success, the number of bytes written to the buffer
+        On error, a negative errno code is returned
+
+    NOTE: By passing NULL as the "attr" argument to iio_device_attr_read,
+    it is now possible to read all of the attributes of a device.
+
+    The buffer is filled with one block of data per attribute of the device,
+    by the order they appear in the iio_device structure.
+
+    The first four bytes of one block correspond to a 32-bit signed value in
+    network order. If negative, it corresponds to the errno code that were
+    returned when reading the attribute; if positive, it corresponds to the
+    length of the data read. In that case, the rest of the block contains the data.
+*/
+METHOD(device_attr_read) {
+    ASSERT_ARGC(2)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+    ASSERT_STRING(args[1], attr)
+
+    uint32_t len1 = 1024;
+    char* dst = malloc(len1);
+    uint32_t len2 = iio_device_attr_read(dev, attr, dst, len1);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, dst, len2, &result))
+    return result;
+}
+
+/*
+    Enumerate the channels of the given device.
+        Parameters
+            dev: A pointer to an iio_device structure
+        Returns
+            The number of channels found
+*/
+METHOD(device_get_channels_count) {
+    ASSERT_ARGC(1)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+
+    uint32_t value = iio_device_get_channels_count(dev);
+
+    napi_value res;
+    ASSERT(res, napi_create_uint32(env, value, &res))
+    return res;
+}
+
+// Get the channel present at the given index.
+// Parameters
+//      dev: A pointer to an iio_device structure
+//      index: The index corresponding to the channel
+// Returns
+//      On success, a pointer to an iio_channel structure
+//      If the index is invalid, NULL is returned
+METHOD(device_get_channel) {
+    ASSERT_ARGC(2)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+    ASSERT_UINT(args[1], index)
+
+    struct iio_channel *cha;
+    cha = iio_device_get_channel(dev, index);
+
+    napi_value res;
+    if (cha) {
+        ASSERT(res, napi_create_external(env, cha, 0, 0, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
+}
+
 //// device_find_channel
 //// device_get_sample_size
 //// channel_is_output
 //// channel_get_id
-//// channel_get_name
+
+/*
+    Retrieve the channel ID (e.g. voltage0)
+
+    Parameters
+        chn:  A pointer to an iio_channel structure
+    Returns
+        A pointer to a static NULL-terminated string
+*/
+METHOD(channel_get_id) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    const char *res = iio_channel_get_id(cha);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    return result;
+}
+
+/*
+    Retrieve the channel name (e.g. vccint)
+
+    Parameters
+        chn:    A pointer to an iio_channel structure
+    Returns
+        A pointer to a static NULL-terminated string
+        NOTE: if the channel has no name, NULL is returned.
+*/
+METHOD(channel_get_name) {
+    ASSERT_ARGC(1)
+    struct iio_channel *cha;
+    ASSERT_EXTERNAL(args[0], cha)
+
+    const char *res = iio_channel_get_name(cha);
+
+    napi_value result;
+    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    return result;
+}
+
 //// channel_is_enabled
 //// channel_get_type
 //// channel_disable
@@ -220,12 +532,51 @@ METHOD(context_get_devices_count) {
 //// buffer_foreach_sample
 
 napi_value Init(napi_env env, napi_value exports) {
-  DECLARE_NAPI_METHOD("get_backends_count", get_backends_count)
-  DECLARE_NAPI_METHOD("get_backend", get_backend)
-  DECLARE_NAPI_METHOD("create_scan_context", create_scan_context)
-  DECLARE_NAPI_METHOD("create_context_from_uri", create_context_from_uri)
-  DECLARE_NAPI_METHOD("context_get_devices_count", context_get_devices_count)
-  return exports;
+    DECLARE_NAPI_METHOD("get_backends_count", get_backends_count)
+    DECLARE_NAPI_METHOD("get_backend", get_backend)
+
+    DECLARE_NAPI_METHOD("create_scan_context", create_scan_context)
+    DECLARE_NAPI_METHOD("scan_context_get_info_list", scan_context_get_info_list)
+    DECLARE_NAPI_METHOD("context_info_get_description", context_info_get_description)
+    DECLARE_NAPI_METHOD("context_info_get_uri", context_info_get_uri)
+
+    DECLARE_NAPI_METHOD("create_context_from_uri", create_context_from_uri)
+
+    DECLARE_NAPI_METHOD("context_get_devices_count", context_get_devices_count)
+    DECLARE_NAPI_METHOD("context_get_device", context_get_device)
+
+    DECLARE_NAPI_METHOD("device_get_channels_count", device_get_channels_count)
+    DECLARE_NAPI_METHOD("device_get_id", device_get_id)
+    DECLARE_NAPI_METHOD("device_get_name", device_get_name)
+    DECLARE_NAPI_METHOD("device_get_attrs_count", device_get_attrs_count)
+    DECLARE_NAPI_METHOD("device_get_attr", device_get_attr)
+    DECLARE_NAPI_METHOD("device_attr_read", device_attr_read)
+
+    DECLARE_NAPI_METHOD("device_get_channel", device_get_channel)
+
+    // DECLARE_NAPI_METHOD("device_find_channel", device_find_channel)
+    // DECLARE_NAPI_METHOD("device_get_sample_size", device_get_sample_size)
+    // DECLARE_NAPI_METHOD("channel_is_output", channel_is_output)
+    DECLARE_NAPI_METHOD("channel_get_id", channel_get_id)
+    DECLARE_NAPI_METHOD("channel_get_name", channel_get_name)
+    // DECLARE_NAPI_METHOD("channel_is_enabled", channel_is_enabled)
+    // DECLARE_NAPI_METHOD("channel_get_type", channel_get_type)
+    // DECLARE_NAPI_METHOD("channel_disable", channel_disable)
+    // DECLARE_NAPI_METHOD("channel_enable", channel_enable)
+    // DECLARE_NAPI_METHOD("channel_get_attrs_count", channel_get_attrs_count)
+    // DECLARE_NAPI_METHOD("channel_get_attr", channel_get_attr)
+    // DECLARE_NAPI_METHOD("channel_attr_read", channel_attr_read)
+    // DECLARE_NAPI_METHOD("channel_attr_write_raw", channel_attr_write_raw)
+    // DECLARE_NAPI_METHOD("channel_attr_write", channel_attr_write)
+    // DECLARE_NAPI_METHOD("device_create_buffer", device_create_buffer)
+    // DECLARE_NAPI_METHOD("buffer_refill", buffer_refill)
+    // DECLARE_NAPI_METHOD("buffer_first", buffer_first)
+    // DECLARE_NAPI_METHOD("buffer_step", buffer_step)
+    // DECLARE_NAPI_METHOD("buffer_start", buffer_start)
+    // DECLARE_NAPI_METHOD("buffer_end", buffer_end)
+    // DECLARE_NAPI_METHOD("buffer_foreach_sample", buffer_foreach_sample)
+
+    return exports;
 }
 
 NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)

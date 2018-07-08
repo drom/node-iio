@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 'use strict';
 
 // const iio = require('bindings')('iio.node');
@@ -14,15 +15,35 @@ for (let i = 0; i < len; i++) {
 
 console.log(backends);
 
-// const scanContexts = backends.map(uri => iio.create_scan_context(uri, 0));
+const scanContexts = backends.map(uri => iio.create_scan_context(uri, 0));
+
+console.log(scanContexts);
+
+const infos = scanContexts.map(cxt => iio.scan_context_get_info_list(cxt));
+
+console.log(infos);
+
+const uris = infos.map(info => {
+    let res = [];
+    for (let i = 0; i < info.length; i++) {
+        const uri = iio.context_info_get_uri(info.ref);
+        const cxt = iio.create_context_from_uri(uri);
+        res[i] = {
+            description: iio.context_info_get_description(info.ref),
+            uri: uri,
+            cxt: cxt
+        };
+    }
+    return res;
+});
+
+console.log(uris);
+
+// // const usbCxt = iio.create_context_from_uri(Buffer.from('usb:3.9.5\u0000'));
+// const usbCxt = iio.create_context_from_uri('usb:3.11.5');
 //
-// console.log(scanContexts.map(cxt => cxt.constructor));
-
-// const usbCxt = iio.create_context_from_uri(Buffer.from('usb:3.9.5\u0000'));
-const usbCxt = iio.create_context_from_uri('usb:3.11.5');
-
-console.log(usbCxt);
-
-const usbDeviceCount = iio.context_get_devices_count(usbCxt);
-
-console.log(usbDeviceCount);
+// console.log(usbCxt);
+//
+// const usbDeviceCount = iio.context_get_devices_count(usbCxt);
+//
+// console.log(usbDeviceCount);
