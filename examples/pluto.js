@@ -17,11 +17,11 @@ const dev = {
 const phyIV0 = dev.phy.chan.input.voltage0.attr;
 
 phyIV0.gain_control_mode.setString('manual'); // AGC
-phyIV0.hardwaregain.setString('18'); // rxgain
+phyIV0.hardwaregain.setString(18); // rxgain
 
 const phyOV0 = dev.phy.chan.output.voltage0.attr;
 
-phyOV0.hardwaregain.setString('-18'); // tx gain
+phyOV0.hardwaregain.setString(-18); // tx gain
 
 const txOAV0 = dev.tx.chan.output.altvoltage0.attr;
 

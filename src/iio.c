@@ -103,7 +103,32 @@
         return 0; \
     } \
 
-//// library_get_version
+/*
+    Get the version of the libiio library.
+
+    Parameters
+        major:  A pointer to an unsigned integer (NULL accepted)
+        minor:  A pointer to an unsigned integer (NULL accepted)
+        git_tag:A pointer to a 8-characters buffer (NULL accepted)
+*/
+METHOD(library_get_version) {
+    ASSERT_ARGC(0)
+
+    unsigned int major, minor;
+    char git_tag[8];
+    iio_library_get_version(&major, &minor, git_tag);
+
+    napi_value res, maj, min, tag;
+    ASSERT(res, napi_create_uint32(env, major, &maj))
+    ASSERT(res, napi_create_uint32(env, minor, &min))
+    ASSERT(res, napi_create_string_utf8(env, git_tag, NAPI_AUTO_LENGTH, &tag))
+    ASSERT(res, napi_create_object(env, &res))
+    ASSERT(res, napi_set_named_property(env, res, "major", maj))
+    ASSERT(res, napi_set_named_property(env, res, "minor", min))
+    ASSERT(res, napi_set_named_property(env, res, "git_tag", tag))
+    return res;
+}
+
 
 /*
     Get the number of available backends.
@@ -131,10 +156,10 @@ METHOD(get_backend) {
     ASSERT_ARGC(1)
     ASSERT_UINT(args[0], index)
 
-    const char *res = iio_get_backend(index);
+    const char *str = iio_get_backend(index);
 
     napi_value result;
-    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    ASSERT(result, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &result))
     return result;
 }
 
@@ -315,10 +340,10 @@ METHOD(device_get_id) {
     struct iio_device *dev;
     ASSERT_EXTERNAL(args[0], dev)
 
-    const char *res = iio_device_get_id(dev);
+    const char *str = iio_device_get_id(dev);
 
     napi_value result;
-    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    ASSERT(result, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &result))
     return result;
 }
 
@@ -333,10 +358,10 @@ METHOD(device_get_name) {
     struct iio_device *dev;
     ASSERT_EXTERNAL(args[0], dev)
 
-    const char *res = iio_device_get_name(dev);
+    const char *str = iio_device_get_name(dev);
 
     napi_value result;
-    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    ASSERT(result, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &result))
     return result;
 }
 
@@ -377,10 +402,10 @@ METHOD(device_get_attr) {
     ASSERT_EXTERNAL(args[0], dev)
     ASSERT_UINT(args[1], index)
 
-    const char* res = iio_device_get_attr(dev, index);
+    const char* str = iio_device_get_attr(dev, index);
 
     napi_value result;
-    ASSERT(result, napi_create_string_utf8(env, res, NAPI_AUTO_LENGTH, &result))
+    ASSERT(result, napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &result))
     return result;
 }
 
@@ -760,6 +785,8 @@ METHOD(channel_attr_write) {
 //// buffer_foreach_sample
 
 napi_value Init(napi_env env, napi_value exports) {
+    DECLARE_NAPI_METHOD("library_get_version", library_get_version)
+
     DECLARE_NAPI_METHOD("get_backends_count", get_backends_count)
     DECLARE_NAPI_METHOD("get_backend", get_backend)
 
@@ -796,6 +823,7 @@ napi_value Init(napi_env env, napi_value exports) {
     DECLARE_NAPI_METHOD("channel_attr_read", channel_attr_read)
     // DECLARE_NAPI_METHOD("channel_attr_write_raw", channel_attr_write_raw)
     DECLARE_NAPI_METHOD("channel_attr_write", channel_attr_write)
+
     // DECLARE_NAPI_METHOD("device_create_buffer", device_create_buffer)
     // DECLARE_NAPI_METHOD("buffer_refill", buffer_refill)
     // DECLARE_NAPI_METHOD("buffer_first", buffer_first)
