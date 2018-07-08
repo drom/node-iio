@@ -32,10 +32,9 @@ Most of API calls are directly mapped to [libiio API](http://analogdevicesinc.gi
 | get_backend                        | Retrieve the name of a given backend                           |
 | create_scan_context                | Create a scan context                                          |
 | scan_context_get_info_list         | Enumerate available contexts                                   |
-| context_info_count                 | number of elements in the context info list **NEW**            |
 | create_context_from_uri            | Create a context from a URI description                        |
-| context_info_get_uri_index         | Get a uri of a discovered context **+ index**                  |
-| context_info_get_description_index | Get a description of a discovered context **+ index**          |
+| context_info_get_uri               | Get a uri of a discovered context **+ index**                  |
+| context_info_get_description       | Get a description of a discovered context **+ index**          |
 | context_get_devices_count          | Enumerate the devices found in the given context               |
 | context_get_device                 | Get the device present at the given index                      |
 |                                    |                                                                |
