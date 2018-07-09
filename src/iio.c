@@ -34,6 +34,21 @@
         return 0; \
     }
 
+#define ASSERT_BOOL(name, var) \
+    napi_status var ## _status; \
+    napi_value var ## _tmp; \
+    var ## _status = napi_coerce_to_bool(env, name, &var ## _tmp); \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    } \
+    bool var; \
+    var ## _status = napi_get_value_bool(env, var ## _tmp, &var); \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    }
+
 #define ASSERT_UINT(name, var) \
     napi_status var ## _status; \
     napi_valuetype var ## _valuetype; \
@@ -775,13 +790,45 @@ METHOD(channel_attr_write) {
     return res;
 }
 
+/*
+    Create an input or output buffer associated to the given device.
 
-//// device_create_buffer
+    Parameters
+        dev:        A pointer to an iio_device structure
+        samples_count:  The number of samples that the buffer should contain
+        cyclic:     If True, enable cyclic mode
+    Returns
+        On success, a pointer to an iio_buffer structure
+        On error, NULL is returned, and errno is set to the error code
+
+    NOTE: Channels that have to be written to / read from must be enabled
+    before creating the buffer.
+*/
+METHOD(device_create_buffer) {
+    ASSERT_ARGC(3)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+    ASSERT_UINT(args[1], samples_count)
+    ASSERT_BOOL(args[2], cyclic)
+
+    struct iio_buffer *buf;
+    buf = iio_device_create_buffer(dev, samples_count, cyclic);
+
+    napi_value res;
+    if (buf) {
+        ASSERT(res, napi_create_external(env, buf, 0, 0, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
+}
+
 //// buffer_refill
 //// buffer_first
 //// buffer_step
 //// buffer_start
 //// buffer_end
+
 //// buffer_foreach_sample
 
 napi_value Init(napi_env env, napi_value exports) {
@@ -824,7 +871,7 @@ napi_value Init(napi_env env, napi_value exports) {
     // DECLARE_NAPI_METHOD("channel_attr_write_raw", channel_attr_write_raw)
     DECLARE_NAPI_METHOD("channel_attr_write", channel_attr_write)
 
-    // DECLARE_NAPI_METHOD("device_create_buffer", device_create_buffer)
+    DECLARE_NAPI_METHOD("device_create_buffer", device_create_buffer)
     // DECLARE_NAPI_METHOD("buffer_refill", buffer_refill)
     // DECLARE_NAPI_METHOD("buffer_first", buffer_first)
     // DECLARE_NAPI_METHOD("buffer_step", buffer_step)
