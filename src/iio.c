@@ -461,7 +461,7 @@ METHOD(device_attr_read) {
 
     napi_value res;
     if (len2 > 0) {
-        ASSERT(res, napi_create_string_utf8(env, dst, len2, &res))
+        ASSERT(res, napi_create_string_utf8(env, dst, NAPI_AUTO_LENGTH, &res))
     } else {
         ASSERT(res, napi_get_undefined(env, &res))
     }
@@ -745,7 +745,7 @@ METHOD(channel_attr_read) {
 
     napi_value res;
     if (len2 > 0) {
-        ASSERT(res, napi_create_string_utf8(env, dst, len2, &res))
+        ASSERT(res, napi_create_string_utf8(env, dst, NAPI_AUTO_LENGTH, &res))
     } else {
         ASSERT(res, napi_get_undefined(env, &res))
     }

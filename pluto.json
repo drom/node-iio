@@ -20,19 +20,19 @@
                             "attr": {
                                 "calibscale": {
                                     "key": "calibscale",
-                                    "value": "1.000000\u0000"
+                                    "value": "1.000000"
                                 },
                                 "calibphase": {
                                     "key": "calibphase",
-                                    "value": "0.000000\u0000"
+                                    "value": "0.000000"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "30720000 3840000 \u0000"
+                                    "value": "30720000 3840000 "
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         },
@@ -45,19 +45,19 @@
                             "attr": {
                                 "calibphase": {
                                     "key": "calibphase",
-                                    "value": "0.000000\u0000"
+                                    "value": "0.000000"
                                 },
                                 "calibscale": {
                                     "key": "calibscale",
-                                    "value": "1.000000\u0000"
+                                    "value": "1.000000"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "30720000 3840000 \u0000"
+                                    "value": "30720000 3840000 "
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         },
@@ -71,23 +71,23 @@
                             "attr": {
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "phase": {
                                     "key": "phase",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "frequency": {
                                     "key": "frequency",
-                                    "value": "9279985\u0000"
+                                    "value": "9279985"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.000000\u0000"
+                                    "value": "0.000000"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         },
@@ -101,23 +101,23 @@
                             "attr": {
                                 "phase": {
                                     "key": "phase",
-                                    "value": "90000\u0000"
+                                    "value": "90000"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.000000\u0000"
+                                    "value": "0.000000"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "frequency": {
                                     "key": "frequency",
-                                    "value": "9279985\u0000"
+                                    "value": "9279985"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         },
@@ -131,23 +131,23 @@
                             "attr": {
                                 "phase": {
                                     "key": "phase",
-                                    "value": "90000\u0000"
+                                    "value": "90000"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "1.000000\u0000"
+                                    "value": "1.000000"
                                 },
                                 "frequency": {
                                     "key": "frequency",
-                                    "value": "9843\u0000"
+                                    "value": "9843"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         },
@@ -161,23 +161,23 @@
                             "attr": {
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "phase": {
                                     "key": "phase",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "frequency": {
                                     "key": "frequency",
-                                    "value": "9279985\u0000"
+                                    "value": "9279985"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.000000\u0000"
+                                    "value": "0.000000"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         }
@@ -195,19 +195,19 @@
                     },
                     "rx_path_rates": {
                         "key": "rx_path_rates",
-                        "value": "BBPLL:983040009 ADC:245760002 R2:122880001 R1:61440000 RF:30720000 RXSAMP:30720000\u0000"
+                        "value": "BBPLL:983040009 ADC:245760002 R2:122880001 R1:61440000 RF:30720000 RXSAMP:30720000"
                     },
                     "trx_rate_governor": {
                         "key": "trx_rate_governor",
-                        "value": "nominal\u0000"
+                        "value": "nominal"
                     },
                     "calib_mode_available": {
                         "key": "calib_mode_available",
-                        "value": "auto manual manual_tx_quad tx_quad rf_dc_offs rssi_gain_step\u0000"
+                        "value": "auto manual manual_tx_quad tx_quad rf_dc_offs rssi_gain_step"
                     },
                     "xo_correction_available": {
                         "key": "xo_correction_available",
-                        "value": "[39991925 1 40007923]\u0000"
+                        "value": "[39991925 1 40007923]"
                     },
                     "gain_table_config": {
                         "key": "gain_table_config"
@@ -217,46 +217,46 @@
                     },
                     "dcxo_tune_fine_available": {
                         "key": "dcxo_tune_fine_available",
-                        "value": "[0 0 0]\u0000"
+                        "value": "[0 0 0]"
                     },
                     "ensm_mode_available": {
                         "key": "ensm_mode_available",
-                        "value": "sleep wait alert fdd pinctrl pinctrl_fdd_indep\u0000"
+                        "value": "sleep wait alert fdd pinctrl pinctrl_fdd_indep"
                     },
                     "multichip_sync": {
                         "key": "multichip_sync"
                     },
                     "rssi_gain_step_error": {
                         "key": "rssi_gain_step_error",
-                        "value": "lna_error: 0 0 0 0\nmixer_error: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\ngain_step_calib_reg_val: 0 0 0 0 0\u0000"
+                        "value": "lna_error: 0 0 0 0\nmixer_error: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\ngain_step_calib_reg_val: 0 0 0 0 0"
                     },
                     "dcxo_tune_coarse_available": {
                         "key": "dcxo_tune_coarse_available",
-                        "value": "[0 0 0]\u0000"
+                        "value": "[0 0 0]"
                     },
                     "tx_path_rates": {
                         "key": "tx_path_rates",
-                        "value": "BBPLL:983040009 DAC:122880001 T2:122880001 T1:61440000 TF:30720000 TXSAMP:30720000\u0000"
+                        "value": "BBPLL:983040009 DAC:122880001 T2:122880001 T1:61440000 TF:30720000 TXSAMP:30720000"
                     },
                     "trx_rate_governor_available": {
                         "key": "trx_rate_governor_available",
-                        "value": "nominal highest_osr\u0000"
+                        "value": "nominal highest_osr"
                     },
                     "xo_correction": {
                         "key": "xo_correction",
-                        "value": "39999924\u0000"
+                        "value": "39999924"
                     },
                     "ensm_mode": {
                         "key": "ensm_mode",
-                        "value": "fdd\u0000"
+                        "value": "fdd"
                     },
                     "filter_fir_config": {
                         "key": "filter_fir_config",
-                        "value": "FIR Rx: 0,0 Tx: 0,0\u0000"
+                        "value": "FIR Rx: 0,0 Tx: 0,0"
                     },
                     "calib_mode": {
                         "key": "calib_mode",
-                        "value": "auto\u0000"
+                        "value": "auto"
                     }
                 },
                 "chan": {
@@ -270,63 +270,63 @@
                             "attr": {
                                 "hardwaregain_available": {
                                     "key": "hardwaregain_available",
-                                    "value": "[-3 1 71]\u0000"
+                                    "value": "[-3 1 71]"
                                 },
                                 "hardwaregain": {
                                     "key": "hardwaregain",
-                                    "value": "18.000000 dB\u0000"
+                                    "value": "18.000000 dB"
                                 },
                                 "rssi": {
                                     "key": "rssi",
-                                    "value": "74.75 dB\u0000"
+                                    "value": "60.75 dB"
                                 },
                                 "rf_port_select": {
                                     "key": "rf_port_select",
-                                    "value": "A_BALANCED\u0000"
+                                    "value": "A_BALANCED"
                                 },
                                 "gain_control_mode": {
                                     "key": "gain_control_mode",
-                                    "value": "manual\u0000"
+                                    "value": "manual"
                                 },
                                 "rf_port_select_available": {
                                     "key": "rf_port_select_available",
-                                    "value": "A_BALANCED B_BALANCED C_BALANCED A_N A_P B_N B_P C_N C_P TX_MONITOR1 TX_MONITOR2 TX_MONITOR1_2\u0000"
+                                    "value": "A_BALANCED B_BALANCED C_BALANCED A_N A_P B_N B_P C_N C_P TX_MONITOR1 TX_MONITOR2 TX_MONITOR1_2"
                                 },
                                 "rf_bandwidth": {
                                     "key": "rf_bandwidth",
-                                    "value": "18000000\u0000"
+                                    "value": "18000000"
                                 },
                                 "rf_dc_offset_tracking_en": {
                                     "key": "rf_dc_offset_tracking_en",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "[2083333 1 61440000]\u0000"
+                                    "value": "[2083333 1 61440000]"
                                 },
                                 "quadrature_tracking_en": {
                                     "key": "quadrature_tracking_en",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 },
                                 "gain_control_mode_available": {
                                     "key": "gain_control_mode_available",
-                                    "value": "manual fast_attack slow_attack hybrid\u0000"
+                                    "value": "manual fast_attack slow_attack hybrid"
                                 },
                                 "filter_fir_en": {
                                     "key": "filter_fir_en",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "rf_bandwidth_available": {
                                     "key": "rf_bandwidth_available",
-                                    "value": "[200000 1 56000000]\u0000"
+                                    "value": "[200000 1 56000000]"
                                 },
                                 "bb_dc_offset_tracking_en": {
                                     "key": "bb_dc_offset_tracking_en",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 }
                             }
                         },
@@ -339,7 +339,7 @@
                             "attr": {
                                 "input": {
                                     "key": "input",
-                                    "value": "34211\u0000"
+                                    "value": "33333"
                                 }
                             }
                         },
@@ -352,55 +352,55 @@
                             "attr": {
                                 "offset": {
                                     "key": "offset",
-                                    "value": "57\u0000"
+                                    "value": "57"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.305250\u0000"
+                                    "value": "0.305250"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "728\u0000"
+                                    "value": "879"
                                 },
                                 "rf_port_select_available": {
                                     "key": "rf_port_select_available",
-                                    "value": "A_BALANCED B_BALANCED C_BALANCED A_N A_P B_N B_P C_N C_P TX_MONITOR1 TX_MONITOR2 TX_MONITOR1_2\u0000"
+                                    "value": "A_BALANCED B_BALANCED C_BALANCED A_N A_P B_N B_P C_N C_P TX_MONITOR1 TX_MONITOR2 TX_MONITOR1_2"
                                 },
                                 "rf_bandwidth": {
                                     "key": "rf_bandwidth",
-                                    "value": "18000000\u0000"
+                                    "value": "18000000"
                                 },
                                 "rf_dc_offset_tracking_en": {
                                     "key": "rf_dc_offset_tracking_en",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "[2083333 1 61440000]\u0000"
+                                    "value": "[2083333 1 61440000]"
                                 },
                                 "quadrature_tracking_en": {
                                     "key": "quadrature_tracking_en",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 },
                                 "gain_control_mode_available": {
                                     "key": "gain_control_mode_available",
-                                    "value": "manual fast_attack slow_attack hybrid\u0000"
+                                    "value": "manual fast_attack slow_attack hybrid"
                                 },
                                 "filter_fir_en": {
                                     "key": "filter_fir_en",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "rf_bandwidth_available": {
                                     "key": "rf_bandwidth_available",
-                                    "value": "[200000 1 56000000]\u0000"
+                                    "value": "[200000 1 56000000]"
                                 },
                                 "bb_dc_offset_tracking_en": {
                                     "key": "bb_dc_offset_tracking_en",
-                                    "value": "1\u0000"
+                                    "value": "1"
                                 }
                             }
                         },
@@ -412,7 +412,7 @@
                             "attr": {
                                 "voltage_filter_fir_en": {
                                     "key": "voltage_filter_fir_en",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 }
                             }
                         }
@@ -428,34 +428,34 @@
                             "attr": {
                                 "external": {
                                     "key": "external",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "frequency": {
                                     "key": "frequency",
-                                    "value": "2450000000\u0000"
+                                    "value": "2450000000"
                                 },
                                 "fastlock_store": {
                                     "key": "fastlock_store",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "fastlock_recall": {
                                     "key": "fastlock_recall"
                                 },
                                 "powerdown": {
                                     "key": "powerdown",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "fastlock_save": {
                                     "key": "fastlock_save",
-                                    "value": "0 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255\u0000"
+                                    "value": "0 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255"
                                 },
                                 "frequency_available": {
                                     "key": "frequency_available",
-                                    "value": "[325000000 1 3800000000]\u0000"
+                                    "value": "[325000000 1 3800000000]"
                                 },
                                 "fastlock_load": {
                                     "key": "fastlock_load",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 }
                             }
                         },
@@ -468,35 +468,35 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "1.000000\u0000"
+                                    "value": "1.000000"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "306\u0000"
+                                    "value": "306"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "[2083333 1 61440000]\u0000"
+                                    "value": "[2083333 1 61440000]"
                                 },
                                 "rf_port_select_available": {
                                     "key": "rf_port_select_available",
-                                    "value": "A B\u0000"
+                                    "value": "A B"
                                 },
                                 "filter_fir_en": {
                                     "key": "filter_fir_en",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 },
                                 "rf_bandwidth_available": {
                                     "key": "rf_bandwidth_available",
-                                    "value": "[200000 1 40000000]\u0000"
+                                    "value": "[200000 1 40000000]"
                                 },
                                 "rf_bandwidth": {
                                     "key": "rf_bandwidth",
-                                    "value": "18000000\u0000"
+                                    "value": "18000000"
                                 }
                             }
                         },
@@ -510,31 +510,31 @@
                             "attr": {
                                 "frequency_available": {
                                     "key": "frequency_available",
-                                    "value": "[325000000 1 3800000000]\u0000"
+                                    "value": "[325000000 1 3800000000]"
                                 },
                                 "fastlock_save": {
                                     "key": "fastlock_save",
-                                    "value": "0 254,254,254,254,254,254,254,254,254,254,254,254,254,254,254,254\u0000"
+                                    "value": "0 254,254,254,254,254,254,254,254,254,254,254,254,254,254,254,254"
                                 },
                                 "powerdown": {
                                     "key": "powerdown",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "fastlock_load": {
                                     "key": "fastlock_load",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "fastlock_store": {
                                     "key": "fastlock_store",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "frequency": {
                                     "key": "frequency",
-                                    "value": "2400000000\u0000"
+                                    "value": "2400000000"
                                 },
                                 "external": {
                                     "key": "external",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "fastlock_recall": {
                                     "key": "fastlock_recall"
@@ -550,35 +550,35 @@
                             "attr": {
                                 "raw": {
                                     "key": "raw",
-                                    "value": "306\u0000"
+                                    "value": "306"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "1.000000\u0000"
+                                    "value": "1.000000"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "[2083333 1 61440000]\u0000"
+                                    "value": "[2083333 1 61440000]"
                                 },
                                 "rf_port_select_available": {
                                     "key": "rf_port_select_available",
-                                    "value": "A B\u0000"
+                                    "value": "A B"
                                 },
                                 "filter_fir_en": {
                                     "key": "filter_fir_en",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 },
                                 "rf_bandwidth_available": {
                                     "key": "rf_bandwidth_available",
-                                    "value": "[200000 1 40000000]\u0000"
+                                    "value": "[200000 1 40000000]"
                                 },
                                 "rf_bandwidth": {
                                     "key": "rf_bandwidth",
-                                    "value": "18000000\u0000"
+                                    "value": "18000000"
                                 }
                             }
                         },
@@ -591,43 +591,43 @@
                             "attr": {
                                 "rf_port_select": {
                                     "key": "rf_port_select",
-                                    "value": "A\u0000"
+                                    "value": "A"
                                 },
                                 "hardwaregain": {
                                     "key": "hardwaregain",
-                                    "value": "-18.000000 dB\u0000"
+                                    "value": "-18.000000 dB"
                                 },
                                 "rssi": {
                                     "key": "rssi",
-                                    "value": "0.00 dB\u0000"
+                                    "value": "0.00 dB"
                                 },
                                 "hardwaregain_available": {
                                     "key": "hardwaregain_available",
-                                    "value": "[0 250 89750]\u0000"
+                                    "value": "[0 250 89750]"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "[2083333 1 61440000]\u0000"
+                                    "value": "[2083333 1 61440000]"
                                 },
                                 "rf_port_select_available": {
                                     "key": "rf_port_select_available",
-                                    "value": "A B\u0000"
+                                    "value": "A B"
                                 },
                                 "filter_fir_en": {
                                     "key": "filter_fir_en",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 },
                                 "rf_bandwidth_available": {
                                     "key": "rf_bandwidth_available",
-                                    "value": "[200000 1 40000000]\u0000"
+                                    "value": "[200000 1 40000000]"
                                 },
                                 "rf_bandwidth": {
                                     "key": "rf_bandwidth",
-                                    "value": "18000000\u0000"
+                                    "value": "18000000"
                                 }
                             }
                         }
@@ -651,26 +651,26 @@
                             "attr": {
                                 "calibphase": {
                                     "key": "calibphase",
-                                    "value": "0.000000\u0000"
+                                    "value": "0.000000"
                                 },
                                 "calibbias": {
                                     "key": "calibbias",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "calibscale": {
                                     "key": "calibscale",
-                                    "value": "1.000000\u0000"
+                                    "value": "1.000000"
                                 },
                                 "samples_pps": {
                                     "key": "samples_pps"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "30720000 3840000 \u0000"
+                                    "value": "30720000 3840000 "
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         },
@@ -683,26 +683,26 @@
                             "attr": {
                                 "calibbias": {
                                     "key": "calibbias",
-                                    "value": "0\u0000"
+                                    "value": "0"
                                 },
                                 "calibphase": {
                                     "key": "calibphase",
-                                    "value": "0.000000\u0000"
+                                    "value": "0.000000"
                                 },
                                 "calibscale": {
                                     "key": "calibscale",
-                                    "value": "1.000000\u0000"
+                                    "value": "1.000000"
                                 },
                                 "samples_pps": {
                                     "key": "samples_pps"
                                 },
                                 "sampling_frequency_available": {
                                     "key": "sampling_frequency_available",
-                                    "value": "30720000 3840000 \u0000"
+                                    "value": "30720000 3840000 "
                                 },
                                 "sampling_frequency": {
                                     "key": "sampling_frequency",
-                                    "value": "30720000\u0000"
+                                    "value": "30720000"
                                 }
                             }
                         }
@@ -718,7 +718,7 @@
                 "attr": {
                     "sampling_frequency": {
                         "key": "sampling_frequency",
-                        "value": "961538\u0000"
+                        "value": "961538"
                     }
                 },
                 "chan": {
@@ -733,11 +733,11 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1822\u0000"
+                                    "value": "1822"
                                 }
                             }
                         },
@@ -751,11 +751,11 @@
                             "attr": {
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1362\u0000"
+                                    "value": "1368"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 }
                             }
                         },
@@ -769,11 +769,11 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "2436\u0000"
+                                    "value": "2434"
                                 }
                             }
                         },
@@ -786,15 +786,15 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "123.040771484\n\u0000"
+                                    "value": "123.040771484\n"
                                 },
                                 "offset": {
                                     "key": "offset",
-                                    "value": "-2219\u0000"
+                                    "value": "-2219"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "2630\u0000"
+                                    "value": "2608"
                                 }
                             }
                         },
@@ -808,11 +808,11 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "-13\u0000"
+                                    "value": "-14"
                                 }
                             }
                         },
@@ -826,11 +826,11 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "2439\u0000"
+                                    "value": "2434"
                                 }
                             }
                         },
@@ -844,11 +844,11 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1370\u0000"
+                                    "value": "1365"
                                 }
                             }
                         },
@@ -862,11 +862,11 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1359\u0000"
+                                    "value": "1363"
                                 }
                             }
                         },
@@ -879,11 +879,11 @@
                             "attr": {
                                 "raw": {
                                     "key": "raw",
-                                    "value": "3675\u0000"
+                                    "value": "3675"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.244140625\n\u0000"
+                                    "value": "0.244140625\n"
                                 }
                             }
                         },
@@ -897,11 +897,11 @@
                             "attr": {
                                 "raw": {
                                     "key": "raw",
-                                    "value": "1688\u0000"
+                                    "value": "1686"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.732421875\n\u0000"
+                                    "value": "0.732421875\n"
                                 }
                             }
                         }
@@ -926,11 +926,11 @@
                             "attr": {
                                 "scale": {
                                     "key": "scale",
-                                    "value": "6.433105468\n\u0000"
+                                    "value": "6.433105468\n"
                                 },
                                 "raw": {
                                     "key": "raw",
-                                    "value": "740\u0000"
+                                    "value": "740"
                                 }
                             }
                         },
@@ -943,11 +943,11 @@
                             "attr": {
                                 "raw": {
                                     "key": "raw",
-                                    "value": "779\u0000"
+                                    "value": "773"
                                 },
                                 "scale": {
                                     "key": "scale",
-                                    "value": "0.516601562\n\u0000"
+                                    "value": "0.516601562\n"
                                 }
                             }
                         }
