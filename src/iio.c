@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <iio.h>
 #include <node_api.h>
 
@@ -118,6 +119,20 @@
         return 0; \
     } \
 
+#define ASSERT_FUNCTION(name, var) \
+    napi_value var; \
+    napi_valuetype var ## _valuetype; \
+    napi_status var ## _status; \
+    var ## _status = napi_typeof(env, name, &var ## _valuetype); \
+    if (var ## _status != napi_ok) { \
+        napi_throw(env, name); \
+        return 0; \
+    } \
+    if (var ## _valuetype != napi_function) { \
+        napi_throw_type_error(env, 0, "Wrong arguments"); \
+        return 0; \
+    }
+
 /*
     Get the version of the libiio library.
 
@@ -127,7 +142,7 @@
         git_tag:A pointer to a 8-characters buffer (NULL accepted)
 */
 METHOD(library_get_version) {
-    ASSERT_ARGC(0)
+    // ASSERT_ARGC(0)
 
     unsigned int major, minor;
     char git_tag[8];
@@ -512,8 +527,60 @@ METHOD(device_get_channel) {
     return res;
 }
 
-//// device_find_channel
-//// device_get_sample_size
+/*
+    Try to find a channel structure by its name of ID.
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+        name:   A NULL-terminated string corresponding to the name or the ID
+                of the channel to search for
+        output: True if the searched channel is output, False otherwise
+    Returns
+        On success, a pointer to an iio_channel structure
+        If the name or ID does not correspond to any known channel of the
+        given device, NULL is returned
+*/
+METHOD(device_find_channel) {
+    ASSERT_ARGC(3)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+    ASSERT_STRING(args[1], name)
+    ASSERT_BOOL(args[2], is_output)
+
+    struct iio_channel *cha;
+    cha = iio_device_find_channel(dev, name, is_output);
+
+    napi_value res;
+    if (cha) {
+        ASSERT(res, napi_create_external(env, cha, 0, 0, &res))
+    } else {
+        ASSERT(res, napi_get_undefined(env, &res))
+    }
+    return res;
+}
+
+/*
+    Get the current sample size.
+
+    Parameters
+        dev:  A pointer to an iio_device structure
+    Returns
+        On success, the sample size in bytes
+        On error, a negative errno code is returned
+    NOTE: The sample size is not constant and will change when channels get
+    enabled or disabled.
+*/
+METHOD(device_get_sample_size) {
+    ASSERT_ARGC(1)
+    struct iio_device *dev;
+    ASSERT_EXTERNAL(args[0], dev)
+
+    const int32_t size = iio_device_get_sample_size(dev);
+
+    napi_value res;
+    ASSERT(res, napi_create_int32(env, size, &res))
+    return res;
+}
 
 /*
     Return True if the given channel is an output channel.
@@ -828,8 +895,75 @@ METHOD(device_create_buffer) {
 //// buffer_step
 //// buffer_start
 //// buffer_end
-
 //// buffer_foreach_sample
+
+struct dev_read_cxt {
+    int len;
+    int count;
+    napi_env *env;
+    napi_async_context *async_context;
+    napi_value *resource_object;
+    napi_value *fn;
+};
+
+ssize_t dev_read_cb(const struct iio_channel *chn, void *src, size_t bytes, void *cxt) {
+    struct dev_read_cxt *cxtt = (struct dev_read_cxt *)cxt;
+    /* Use "src" to read or write a sample for this channel */
+    napi_env env = *(cxtt->env);
+    napi_async_context async_context = *(cxtt->async_context);
+    napi_value resource_object = *(cxtt->resource_object);
+    napi_value fn = *(cxtt->fn);
+    napi_value res;
+    ASSERT(fn, napi_make_callback(env,
+        async_context,
+        resource_object,
+        fn,
+        0,
+        NULL,
+        &res
+    ))
+    printf("%ld %d\n", bytes, src);
+    return 0;
+}
+
+METHOD(buf_read) {
+    ASSERT_ARGC(3)
+    struct iio_buffer *buf;
+    ASSERT_EXTERNAL(args[0], buf)
+    ASSERT_UINT(args[1], len)
+    ASSERT_FUNCTION(args[2], fn)
+
+    struct dev_read_cxt *cxt = malloc(sizeof *cxt);
+    cxt->len = len;
+    cxt->fn = &fn;
+    cxt->env = &env;
+
+    napi_value async_resource_name;
+    ASSERT(async_resource_name, napi_create_string_utf8(env,
+        "async_resource_name",
+        NAPI_AUTO_LENGTH,
+        &async_resource_name
+    ))
+
+    napi_async_context async_context;
+    ASSERT(async_resource_name, napi_async_init(env,
+        NULL,
+        async_resource_name,
+        &async_context
+    ))
+    cxt->async_context = &async_context;
+
+    napi_value resource_object;
+    ASSERT(resource_object, napi_create_object(env, &resource_object))
+    cxt->resource_object = &resource_object;
+
+    printf("A\n");
+    const ssize_t count = iio_buffer_foreach_sample(buf, dev_read_cb, (void *)cxt);
+
+    napi_value res;
+    ASSERT(res, napi_create_uint32(env, count, &res))
+    return res;
+}
 
 napi_value Init(napi_env env, napi_value exports) {
     DECLARE_NAPI_METHOD("library_get_version", library_get_version)
@@ -856,8 +990,8 @@ napi_value Init(napi_env env, napi_value exports) {
 
     DECLARE_NAPI_METHOD("device_get_channel", device_get_channel)
 
-    // DECLARE_NAPI_METHOD("device_find_channel", device_find_channel)
-    // DECLARE_NAPI_METHOD("device_get_sample_size", device_get_sample_size)
+    DECLARE_NAPI_METHOD("device_find_channel", device_find_channel)
+    DECLARE_NAPI_METHOD("device_get_sample_size", device_get_sample_size)
     DECLARE_NAPI_METHOD("channel_is_output", channel_is_output)
     DECLARE_NAPI_METHOD("channel_get_id", channel_get_id)
     DECLARE_NAPI_METHOD("channel_get_name", channel_get_name)
@@ -878,6 +1012,8 @@ napi_value Init(napi_env env, napi_value exports) {
     // DECLARE_NAPI_METHOD("buffer_start", buffer_start)
     // DECLARE_NAPI_METHOD("buffer_end", buffer_end)
     // DECLARE_NAPI_METHOD("buffer_foreach_sample", buffer_foreach_sample)
+
+    DECLARE_NAPI_METHOD("buf_read", buf_read)
 
     return exports;
 }

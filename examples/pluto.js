@@ -46,6 +46,11 @@ const txbuf = dev.tx.createBuffer(1 << 20, false);
 
 console.log(rxbuf, txbuf);
 
+console.log(dev.rx.getSampleSize());
+console.log(dev.tx.getSampleSize());
+
+iio.buf_read(rxbuf, 1024, function (buf) { console.log(buf); });
+
 // chans.map(cha => cha.disable());
 
 // iio_channel_is_scan_element
