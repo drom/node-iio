@@ -905,16 +905,27 @@ METHOD(device_create_buffer) {
 //// buffer_foreach_sample
 
 struct dev_read_cxt {
-    int len;
-    int count;
+    void *data;
+    uint32_t max_len;
+    uint32_t len;
     napi_env *env;
     napi_async_context *async_context;
     napi_value *resource_object;
     napi_value *fn;
+    struct iio_buffer *buf;
 };
 
 ssize_t dev_read_cb(const struct iio_channel *chn, void *src, size_t bytes, void *cxt) {
     struct dev_read_cxt *cxtt = (struct dev_read_cxt *)cxt;
+    uint32_t len = cxtt->len;
+    if (len == 0) {
+        cxtt->data = src;
+    }
+    len += bytes;
+    if (len < cxtt->max_len) {
+        cxtt->len = len;
+        return 0;
+    }
     /* Use "src" to read or write a sample for this channel */
     napi_env env = *(cxtt->env);
     napi_async_context async_context = *(cxtt->async_context);
@@ -929,7 +940,8 @@ ssize_t dev_read_cb(const struct iio_channel *chn, void *src, size_t bytes, void
         NULL,
         &res
     ))
-    // printf("%ld %d\n", bytes, src);
+    // printf("%ld\n", iio_buffer_refill(cxtt->buf));
+    cxtt->len = 0;
     return 0;
 }
 
@@ -937,13 +949,14 @@ METHOD(buf_read) {
     ASSERT_ARGC(3)
     struct iio_buffer *buf;
     ASSERT_EXTERNAL(args[0], buf)
-    ASSERT_UINT(args[1], len)
+    ASSERT_UINT(args[1], max_len)
     ASSERT_FUNCTION(args[2], fn)
 
     struct dev_read_cxt *cxt = malloc(sizeof *cxt);
-    cxt->len = len;
+    cxt->max_len = max_len;
     cxt->fn = &fn;
     cxt->env = &env;
+    cxt->buf = buf;
 
     napi_value async_resource_name;
     ASSERT(async_resource_name, napi_create_string_utf8(env,
@@ -965,7 +978,10 @@ METHOD(buf_read) {
     cxt->resource_object = &resource_object;
 
     printf("A\n");
+
     const ssize_t count = iio_buffer_foreach_sample(buf, dev_read_cb, (void *)cxt);
+
+    iio_buffer_refill(buf);
 
     napi_value res;
     ASSERT(res, napi_create_uint32(env, count, &res))

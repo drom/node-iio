@@ -49,7 +49,7 @@ console.log(rxbuf, txbuf);
 console.log(dev.rx.getSampleSize());
 console.log(dev.tx.getSampleSize());
 
-iio.buf_read(rxbuf, 1024, function (buf) { console.log(buf); });
+iio.buf_read(rxbuf, 1 << 17, function () { console.log('CCC'); });
 
 // chans.map(cha => cha.disable());
 
