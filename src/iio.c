@@ -2,135 +2,124 @@
 #include <iio.h>
 #include <node_api.h>
 
-#define DECLARE_NAPI_METHOD(name, func) \
-    napi_status func ## _status; \
-    napi_property_descriptor func ## _desc = { name, 0, func, 0, 0, 0, napi_default, 0 }; \
-    func ## _status = napi_define_properties(env, exports, 1, &func ## _desc); \
-    if (func ## _status != napi_ok) { \
+#define DECLARE_NAPI_METHOD(name, func) { \
+    napi_property_descriptor desc = { name, 0, func, 0, 0, 0, napi_default, 0 }; \
+    if (napi_define_properties(env, exports, 1, &desc) != napi_ok) { \
         napi_throw_error(env, 0, "Error"); \
-    }
+    } \
+}
 
 #define METHOD(name) \
     napi_value name(napi_env env, napi_callback_info info)
 
 #define ASSERT(val, expr) \
-    { \
-        napi_status status = expr; \
-        if (status != napi_ok) { \
-            napi_throw(env, val); \
-        } \
+    if (expr != napi_ok) { \
+        napi_throw(env, val); \
     }
 
 #define ASSERT_ARGC(count) \
-    size_t argc = count; \
     napi_value args[count]; \
-    napi_status argc_status; \
-    argc_status = napi_get_cb_info(env, info, &argc, args, 0, 0); \
-    if (argc_status != napi_ok) { \
-        napi_throw_error(env, 0, "Error"); \
-        return 0; \
-    } \
-    if (argc < count) { \
-        napi_throw_type_error(env, 0, "Wrong number of arguments"); \
-        return 0; \
+    { \
+        size_t argc = count; \
+        if (napi_get_cb_info(env, info, &argc, args, 0, 0) != napi_ok) { \
+            napi_throw_error(env, 0, "Error"); \
+            return 0; \
+        } \
+        if (argc < count) { \
+            napi_throw_type_error(env, 0, "Wrong number of arguments"); \
+            return 0; \
+        } \
     }
 
 #define ASSERT_BOOL(name, var) \
-    napi_status var ## _status; \
-    napi_value var ## _tmp; \
-    var ## _status = napi_coerce_to_bool(env, name, &var ## _tmp); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
-    } \
     bool var; \
-    var ## _status = napi_get_value_bool(env, var ## _tmp, &var); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
+    { \
+        napi_value tmp; \
+        if (napi_coerce_to_bool(env, name, &tmp) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
+        if (napi_get_value_bool(env, tmp, &var) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
     }
 
 #define ASSERT_UINT(name, var) \
-    napi_status var ## _status; \
-    napi_valuetype var ## _valuetype; \
-    var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
-    } \
-    if (var ## _valuetype != napi_number) { \
-        napi_throw_type_error(env, 0, "Wrong arguments"); \
-        return 0; \
-    } \
     uint32_t var; \
-    var ## _status = napi_get_value_uint32(env, name, &var); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
+    { \
+        napi_valuetype valuetype; \
+        if (napi_typeof(env, name, &valuetype) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
+        if (valuetype != napi_number) { \
+            napi_throw_type_error(env, 0, "Wrong arguments"); \
+            return 0; \
+        } \
+        if (napi_get_value_uint32(env, name, &var) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
     }
 
 #define ASSERT_STRING(name, var) \
-    napi_status var ## _status; \
-    napi_value var ## _tmp; \
-    var ## _status = napi_coerce_to_string(env, name, &var ## _tmp); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
-    } \
     char var[256]; \
-    size_t var ## _result; \
-    var ## _status = napi_get_value_string_latin1(env, var ## _tmp, var, 256, &var ## _result); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
+    { \
+        napi_value tmp; \
+        if (napi_coerce_to_string(env, name, &tmp) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
+        size_t result; \
+        if (napi_get_value_string_latin1(env, tmp, var, 256, &result) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
     }
-
 
 #define ASSERT_OBJECT(name, var) \
     napi_value var; \
-    napi_valuetype var ## _valuetype; \
-    \
-    napi_status var ## _status; \
-    var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
-    } \
-    if (var ## _valuetype != napi_object) { \
-        napi_throw_type_error(env, 0, "Wrong arguments"); \
-        return 0; \
-    } \
+    { \
+        napi_valuetype valuetype; \
+        if (napi_typeof(env, name, &valuetype) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
+        if (valuetype != napi_object) { \
+            napi_throw_type_error(env, 0, "Wrong arguments"); \
+            return 0; \
+        } \
+    }
 
-#define ASSERT_EXTERNAL(name, var) \
-    napi_valuetype var ## _valuetype; \
-    napi_status var ## _status; \
-    var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    if (var ## _status != napi_ok) { \
+#define ASSERT_EXTERNAL(name, var) { \
+    napi_valuetype valuetype; \
+    if (napi_typeof(env, name, &valuetype) != napi_ok) { \
         napi_throw(env, name); \
         return 0; \
     } \
-    if (var ## _valuetype != napi_external) { \
+    if (valuetype != napi_external) { \
         napi_throw_type_error(env, 0, "Wrong arguments"); \
         return 0; \
     } \
-    var ## _status = napi_get_value_external(env, name, (void **)(&var)); \
-    if (var ## _status != napi_ok) { \
+    if (napi_get_value_external(env, name, (void **)(&var)) != napi_ok) { \
         napi_throw(env, name); \
         return 0; \
     } \
+}
 
 #define ASSERT_FUNCTION(name, var) \
     napi_value var; \
-    napi_valuetype var ## _valuetype; \
-    napi_status var ## _status; \
-    var ## _status = napi_typeof(env, name, &var ## _valuetype); \
-    if (var ## _status != napi_ok) { \
-        napi_throw(env, name); \
-        return 0; \
-    } \
-    if (var ## _valuetype != napi_function) { \
-        napi_throw_type_error(env, 0, "Wrong arguments"); \
-        return 0; \
+    { \
+        napi_valuetype valuetype; \
+        if (napi_typeof(env, name, &valuetype) != napi_ok) { \
+            napi_throw(env, name); \
+            return 0; \
+        } \
+        if (valuetype != napi_function) { \
+            napi_throw_type_error(env, 0, "Wrong arguments"); \
+            return 0; \
+        } \
     }
 
 /*
@@ -162,8 +151,9 @@ METHOD(library_get_version) {
 
 /*
     Get the number of available backends.
-        Returns:
-            The number of available backends
+
+    Returns:
+        The number of available backends
 */
 METHOD(get_backends_count) {
     uint32_t value = iio_get_backends_count();
@@ -176,11 +166,12 @@ METHOD(get_backends_count) {
 
 /*
     Retrieve the name of a given backend.
-        Parameters:
-            index: The index corresponding to the attribute
-        Returns:
-            On success, a pointer to a static NULL-terminated string
-            If the index is invalid, NULL is returned
+
+    Parameters:
+        index: The index corresponding to the attribute
+    Returns:
+        On success, a pointer to a static NULL-terminated string
+        If the index is invalid, NULL is returned
 */
 METHOD(get_backend) {
     ASSERT_ARGC(1)
@@ -195,13 +186,14 @@ METHOD(get_backend) {
 
 /*
     Create a scan context.
-        Parameters:
-            backend:    A NULL-terminated string containing the backend to use
-                        for scanning. If NULL, all the available backends are used.
-            flags:      Unused for now. Set to 0.
-        Returns:
-            on success, a pointer to a iio_scan_context structure
-            On failure, NULL is returned and errno is set appropriately
+
+    Parameters:
+        backend:    A NULL-terminated string containing the backend to use
+                    for scanning. If NULL, all the available backends are used.
+        flags:      Unused for now. Set to 0.
+    Returns:
+        on success, a pointer to a iio_scan_context structure
+        On failure, NULL is returned and errno is set appropriately
 */
 METHOD(create_scan_context) {
     ASSERT_ARGC(2)
@@ -222,13 +214,14 @@ METHOD(create_scan_context) {
 
 /*
     Enumerate available contexts.
-        Parameters:
-            ctx:    A pointer to an iio_scan_context structure
-            info:   A pointer to a 'const struct iio_context_info **' typed variable.
-                    The pointed variable will be initialized on success.
-        Returns:
-            On success, the number of contexts found.
-            On failure, a negative error number.
+
+    Parameters:
+        ctx:    A pointer to an iio_scan_context structure
+        info:   A pointer to a 'const struct iio_context_info **' typed variable.
+                The pointed variable will be initialized on success.
+    Returns:
+        On success, the number of contexts found.
+        On failure, a negative error number.
 */
 METHOD(scan_context_get_info_list) {
     ASSERT_ARGC(1)
@@ -249,10 +242,11 @@ METHOD(scan_context_get_info_list) {
 
 /*
     Get the URI of a discovered context.
-        Parameters
-            info:   A pointer to an iio_context_info structure
-        Returns
-            A pointer to a static NULL-terminated string
+
+    Parameters
+        info:   A pointer to an iio_context_info structure
+    Returns
+        A pointer to a static NULL-terminated string
 */
 METHOD(context_info_get_uri) {
     ASSERT_ARGC(1)
@@ -268,10 +262,11 @@ METHOD(context_info_get_uri) {
 
 /*
     Get a description of a discovered context.
-        Parameters
-            info:   A pointer to an iio_context_info structure
-        Returns
-            A pointer to a static NULL-terminated string
+
+    Parameters
+        info:   A pointer to an iio_context_info structure
+    Returns
+        A pointer to a static NULL-terminated string
 */
 METHOD(context_info_get_description) {
     ASSERT_ARGC(1)
@@ -287,11 +282,12 @@ METHOD(context_info_get_description) {
 
 /*
     Create a context from a URI description.
-        Parameters:
-            uri: A URI describing the context location
-        Returns:
-            On success, a pointer to a iio_context structure
-            On failure, NULL is returned and errno is set appropriately
+
+    Parameters:
+        uri: A URI describing the context location
+    Returns:
+        On success, a pointer to a iio_context structure
+        On failure, NULL is returned and errno is set appropriately
 */
 METHOD(create_context_from_uri) {
     ASSERT_ARGC(1)
@@ -311,10 +307,11 @@ METHOD(create_context_from_uri) {
 
 /*
     Enumerate the devices found in the given context.
-        Parameters:
-            ctx: A pointer to an iio_context structure
-        Returns
-            The number of devices found
+
+    Parameters:
+        ctx: A pointer to an iio_context structure
+    Returns
+        The number of devices found
 */
 METHOD(context_get_devices_count) {
     ASSERT_ARGC(1)
@@ -331,12 +328,13 @@ METHOD(context_get_devices_count) {
 //// context_get_device
 /*
     Get the device present at the given index.
-        Parameters
-            ctx: A pointer to an iio_context structure
-            index:The index corresponding to the device
-        Returns
-            On success, a pointer to an iio_device structure
-            If the index is invalid, NULL is returned
+
+    Parameters
+        ctx: A pointer to an iio_context structure
+        index:The index corresponding to the device
+    Returns
+        On success, a pointer to an iio_device structure
+        If the index is invalid, NULL is returned
 */
 METHOD(context_get_device) {
     ASSERT_ARGC(2)
@@ -360,11 +358,14 @@ METHOD(context_get_device) {
 
 //// device_get_id
 
-// Retrieve the device ID (e.g. iio:device0)
-// Parameters
-//      dev: A pointer to an iio_device structure
-// Returns
-//      A pointer to a static NULL-terminated string
+/*
+    Retrieve the device ID (e.g. iio:device0)
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+    Returns
+        A pointer to a static NULL-terminated string
+*/
 METHOD(device_get_id) {
     ASSERT_ARGC(1)
     struct iio_device *dev;
@@ -377,12 +378,15 @@ METHOD(device_get_id) {
     return result;
 }
 
-// Retrieve the device name (e.g. xadc)
-// Parameters
-//      dev: A pointer to an iio_device structure
-// Returns
-//      A pointer to a static NULL-terminated string
-//      NOTE: if the device has no name, NULL is returned.
+/*
+    Retrieve the device name (e.g. xadc)
+
+    Parameters
+        dev:    A pointer to an iio_device structure
+    Returns
+        A pointer to a static NULL-terminated string
+        NOTE: if the device has no name, NULL is returned.
+*/
 METHOD(device_get_name) {
     ASSERT_ARGC(1)
     struct iio_device *dev;
@@ -414,7 +418,6 @@ METHOD(device_get_attrs_count) {
     ASSERT(res, napi_create_uint32(env, value, &res))
     return res;
 }
-
 
 /*
     Get the device-specific attribute present at the given index.
@@ -485,10 +488,11 @@ METHOD(device_attr_read) {
 
 /*
     Enumerate the channels of the given device.
-        Parameters
-            dev: A pointer to an iio_device structure
-        Returns
-            The number of channels found
+
+    Parameters
+        dev: A pointer to an iio_device structure
+    Returns
+        The number of channels found
 */
 METHOD(device_get_channels_count) {
     ASSERT_ARGC(1)
@@ -502,13 +506,16 @@ METHOD(device_get_channels_count) {
     return res;
 }
 
-// Get the channel present at the given index.
-// Parameters
-//      dev: A pointer to an iio_device structure
-//      index: The index corresponding to the channel
-// Returns
-//      On success, a pointer to an iio_channel structure
-//      If the index is invalid, NULL is returned
+/*
+    Get the channel present at the given index.
+
+    Parameters
+         dev: A pointer to an iio_device structure
+         index: The index corresponding to the channel
+    Returns
+         On success, a pointer to an iio_channel structure
+         If the index is invalid, NULL is returned
+*/
 METHOD(device_get_channel) {
     ASSERT_ARGC(2)
     struct iio_device *dev;
@@ -922,7 +929,7 @@ ssize_t dev_read_cb(const struct iio_channel *chn, void *src, size_t bytes, void
         NULL,
         &res
     ))
-    printf("%ld %d\n", bytes, src);
+    // printf("%ld %d\n", bytes, src);
     return 0;
 }
 
