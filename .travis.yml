@@ -1,6 +1,6 @@
 os:
   - linux
-sudo: false
+sudo: true
 env:
   matrix:
   - TRAVIS_NODE_VERSION="10"
