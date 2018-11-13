@@ -2,7 +2,7 @@
   "targets": [
     {
       "target_name": "iio",
-      "sources": [ "src/iio.c" ],
+      "sources": [ "iio.c" ],
       "libraries": [
         "-liio"
       ]
