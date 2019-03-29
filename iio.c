@@ -109,7 +109,7 @@
 }
 
 #define ASSERT_FUNCTION(name, var) \
-    napi_value var; \
+    napi_value var = name; \
     { \
         napi_valuetype valuetype; \
         if (napi_typeof(env, name, &valuetype) != napi_ok) { \
@@ -213,6 +213,27 @@ METHOD(create_scan_context) {
 }
 
 /*
+    Destroy the given scan context.
+
+    Parameters
+        ctx	A pointer to an iio_scan_context structure
+
+    NOTE: After that function, the iio_scan_context pointer shall be invalid.
+*/
+METHOD(scan_context_destroy) {
+    ASSERT_ARGC(1)
+    struct iio_scan_context *ctx;
+    ASSERT_EXTERNAL(args[0], ctx)
+
+    if (ctx)
+        iio_scan_context_destroy(ctx);
+
+    napi_value res;
+    ASSERT(res, napi_get_undefined(env, &res))
+    return res;
+}
+
+/*
     Enumerate available contexts.
 
     Parameters:
@@ -228,7 +249,7 @@ METHOD(scan_context_get_info_list) {
     struct iio_scan_context *cxt;
     ASSERT_EXTERNAL(args[0], cxt)
 
-    struct iio_context_info **icxt;
+    struct iio_context_info **icxt = NULL;
     uint32_t count = iio_scan_context_get_info_list(cxt, &icxt);
 
     napi_value res, length, ref;
@@ -237,6 +258,25 @@ METHOD(scan_context_get_info_list) {
     ASSERT(res, napi_create_object(env, &res))
     ASSERT(res, napi_set_named_property(env, res, "length", length))
     ASSERT(res, napi_set_named_property(env, res, "ref", ref))
+    return res;
+}
+
+/*
+    Free a context info list.
+
+    Parameters
+        info	A pointer to a 'const struct iio_context_info *' typed variable
+*/
+METHOD(context_info_list_free) {
+    ASSERT_ARGC(1)
+    struct iio_context_info **ilist;
+    ASSERT_EXTERNAL(args[0], ilist)
+
+    if (ilist)
+        iio_context_info_list_free(ilist);
+
+    napi_value res;
+    ASSERT(res, napi_get_undefined(env, &res))
     return res;
 }
 
@@ -302,6 +342,26 @@ METHOD(create_context_from_uri) {
     } else {
         ASSERT(res, napi_get_undefined(env, &res))
     }
+    return res;
+}
+
+/*
+    Destroy the given context.
+
+    Parameters
+        ctx	A pointer to an iio_context structure
+
+    NOTE: After that function, the iio_context pointer shall be invalid.
+*/
+METHOD(context_destroy) {
+    ASSERT_ARGC(1)
+    struct iio_context *ctx;
+    ASSERT_EXTERNAL(args[0], ctx)
+
+    iio_context_destroy(ctx);
+
+    napi_value res;
+    ASSERT(res, napi_get_undefined(env, &res))
     return res;
 }
 
@@ -897,6 +957,26 @@ METHOD(device_create_buffer) {
     return res;
 }
 
+/*
+    Destroy the given buffer.
+
+    Parameters
+        buf	A pointer to an iio_buffer structure
+
+    NOTE: After that function, the iio_buffer pointer shall be invalid.
+*/
+METHOD(buffer_destroy) {
+    ASSERT_ARGC(1)
+    struct iio_buffer *buf;
+    ASSERT_EXTERNAL(args[0], buf)
+
+    iio_buffer_destroy(buf);
+
+    napi_value res;
+    ASSERT(res, napi_get_undefined(env, &res))
+    return res;
+}
+
 //// buffer_refill
 //// buffer_first
 //// buffer_step
@@ -905,83 +985,82 @@ METHOD(device_create_buffer) {
 //// buffer_foreach_sample
 
 struct dev_read_cxt {
-    void *data;
-    uint32_t max_len;
-    uint32_t len;
     napi_env *env;
-    napi_async_context *async_context;
     napi_value *resource_object;
     napi_value *fn;
-    struct iio_buffer *buf;
 };
 
-ssize_t dev_read_cb(const struct iio_channel *chn, void *src, size_t bytes, void *cxt) {
+ssize_t dev_read_cb(const struct iio_channel *chn, void *sample, size_t bytes, void *cxt) {
     struct dev_read_cxt *cxtt = (struct dev_read_cxt *)cxt;
-    uint32_t len = cxtt->len;
-    if (len == 0) {
-        cxtt->data = src;
+    napi_value return_val;
+    napi_value argv[2];
+    napi_status status;
+
+    if (chn && sample && cxtt && bytes) {
+        napi_env *env = cxtt->env;
+        const struct iio_data_format *format = iio_channel_get_data_format(chn);
+        int32_t chnl_ix = iio_channel_get_index(chn);
+        napi_create_int32(*env, chnl_ix, argv); // First argument - the channel index
+        // Second argument - the sample int32 value
+        if (bytes == 1) {
+            int8_t val;
+            iio_channel_convert(chn, &val, sample);
+            if (format->is_signed)
+                napi_create_int32(*env, (int32_t)val, argv + 1);
+            else
+                napi_create_int32(*env, (uint32_t)val, argv + 1);
+        } else if (bytes == 2) {
+            int16_t val;
+            iio_channel_convert(chn, &val, sample);
+            if (format->is_signed)
+                napi_create_int32(*env, (int32_t)val, argv + 1);
+            else
+                napi_create_int32(*env, (uint32_t)val, argv + 1);
+        } else {
+            int32_t val;
+            iio_channel_convert(chn, &val, sample);
+            if (format->is_signed)
+                napi_create_int32(*env, (int32_t)val, argv + 1);
+            else
+                napi_create_int32(*env, (uint32_t)val, argv + 1);
+        }
+        status = napi_call_function(*env,
+            *(cxtt->resource_object),
+            *(cxtt->fn),
+            2, //argc
+            argv,
+            &return_val);
+        if (status != napi_ok)
+            return 0;
+        int32_t result;
+        status = napi_get_value_int32(*env, return_val, &result);
+        if ((status != napi_ok) || (result <= 0))
+            return 0;
+        return result;
     }
-    len += bytes;
-    if (len < cxtt->max_len) {
-        cxtt->len = len;
-        return 0;
-    }
-    /* Use "src" to read or write a sample for this channel */
-    napi_env env = *(cxtt->env);
-    napi_async_context async_context = *(cxtt->async_context);
-    napi_value resource_object = *(cxtt->resource_object);
-    napi_value fn = *(cxtt->fn);
-    napi_value res;
-    ASSERT(fn, napi_make_callback(env,
-        async_context,
-        resource_object,
-        fn,
-        0,
-        NULL,
-        &res
-    ))
-    // printf("%ld\n", iio_buffer_refill(cxtt->buf));
-    cxtt->len = 0;
     return 0;
 }
 
 METHOD(buf_read) {
-    ASSERT_ARGC(3)
+    napi_value global;
+    ASSERT(global, napi_get_undefined(env, &global));
+    ASSERT_ARGC(2)
     struct iio_buffer *buf;
     ASSERT_EXTERNAL(args[0], buf)
-    ASSERT_UINT(args[1], max_len)
-    ASSERT_FUNCTION(args[2], fn)
+    ASSERT_FUNCTION(args[1], fn)
 
-    struct dev_read_cxt *cxt = malloc(sizeof *cxt);
-    cxt->max_len = max_len;
-    cxt->fn = &fn;
-    cxt->env = &env;
-    cxt->buf = buf;
+    struct dev_read_cxt cxt;
+    cxt.fn = &fn;
+    cxt.env = &env;
+    cxt.resource_object = &global;
 
-    napi_value async_resource_name;
-    ASSERT(async_resource_name, napi_create_string_utf8(env,
-        "async_resource_name",
-        NAPI_AUTO_LENGTH,
-        &async_resource_name
-    ))
-
-    napi_async_context async_context;
-    ASSERT(async_resource_name, napi_async_init(env,
-        NULL,
-        async_resource_name,
-        &async_context
-    ))
-    cxt->async_context = &async_context;
-
-    napi_value resource_object;
-    ASSERT(resource_object, napi_create_object(env, &resource_object))
-    cxt->resource_object = &resource_object;
-
-    printf("A\n");
-
-    const ssize_t count = iio_buffer_foreach_sample(buf, dev_read_cb, (void *)cxt);
+    // IIO is blocking by default, but anyway..
+    iio_buffer_set_blocking_mode(buf, true);
 
     iio_buffer_refill(buf);
+
+    // This is nothing more but iteration over the buffer..
+    const ssize_t count = iio_buffer_foreach_sample(buf, dev_read_cb, &cxt);
 
     napi_value res;
     ASSERT(res, napi_create_uint32(env, count, &res))
@@ -995,11 +1074,14 @@ napi_value Init(napi_env env, napi_value exports) {
     DECLARE_NAPI_METHOD("get_backend", get_backend)
 
     DECLARE_NAPI_METHOD("create_scan_context", create_scan_context)
+    DECLARE_NAPI_METHOD("scan_context_destroy", scan_context_destroy)
     DECLARE_NAPI_METHOD("scan_context_get_info_list", scan_context_get_info_list)
+    DECLARE_NAPI_METHOD("context_info_list_free", context_info_list_free);
     DECLARE_NAPI_METHOD("context_info_get_description", context_info_get_description)
     DECLARE_NAPI_METHOD("context_info_get_uri", context_info_get_uri)
 
     DECLARE_NAPI_METHOD("create_context_from_uri", create_context_from_uri)
+    DECLARE_NAPI_METHOD("context_destroy", context_destroy)
 
     DECLARE_NAPI_METHOD("context_get_devices_count", context_get_devices_count)
     DECLARE_NAPI_METHOD("context_get_device", context_get_device)
@@ -1037,6 +1119,8 @@ napi_value Init(napi_env env, napi_value exports) {
     // DECLARE_NAPI_METHOD("buffer_foreach_sample", buffer_foreach_sample)
 
     DECLARE_NAPI_METHOD("buf_read", buf_read)
+
+    DECLARE_NAPI_METHOD("buffer_destroy", buffer_destroy)
 
     return exports;
 }
