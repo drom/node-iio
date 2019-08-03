@@ -11,6 +11,6 @@
   "author": "Aliaksei Chapyzhenka",
   "license": "MIT",
   "dependencies": {
-    "bindings": "^1.3.0"
+    "bindings": "^1.5.0"
   }
 }
